@@ -7,4 +7,15 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Widget defaults -->
+    <color name="widget_default_bg">#FF1A1A1A</color>
+    <color name="widget_default_fg">#FFF5F5F5</color>
+
+    <!-- App theme -->
+    <color name="app_bg">#FF0D0D0D</color>
+    <color name="app_surface">#FF1A1A1A</color>
+    <color name="app_text_primary">#FFF5F5F5</color>
+    <color name="app_text_secondary">#FF999999</color>
+    <color name="app_accent">#FFE0E0E0</color>
 </resources>
