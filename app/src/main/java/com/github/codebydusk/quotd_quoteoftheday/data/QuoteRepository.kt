@@ -18,10 +18,13 @@ object QuoteRepository {
      */
     val categories = mapOf(
         "no" to "no.json",
-        "horoscope" to "horoscope.json",
+        "chaos" to "chaos.json",
         "bad_advice" to "bad_advice.json",
         "emotional_damage" to "emotional_damage.json",
-        "love_letters" to "love_letters.json"
+        "love" to "love.json",
+        "lust" to "lust.json",
+        "horoscope" to "horoscope.json",
+        "insults" to "insults.json"
     )
 
     /**

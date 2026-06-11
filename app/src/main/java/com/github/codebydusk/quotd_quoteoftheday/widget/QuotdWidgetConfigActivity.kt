@@ -110,10 +110,13 @@ fun WidgetConfigScreen(
 ) {
     val categories = listOf(
         "no" to "🚫 No",
-        "horoscope" to "🔮 Horoscope",
+        "chaos" to "🌀 Chaos",
         "bad_advice" to "💀 Bad Advice",
         "emotional_damage" to "💥 Emotional Damage",
-        "love_letters" to "💌 Love Letters"
+        "love" to "💌 Love",
+        "lust" to "🔥 Lust",
+        "horoscope" to "🔮 Horoscope",
+        "insults" to "🎯 Funny Insults"
     )
 
     var selectedCategory by remember { mutableStateOf(defaultCategory) }

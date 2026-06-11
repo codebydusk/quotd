@@ -15,8 +15,11 @@
     <string name="text_color">Text Color</string>
     <string name="preview">Preview</string>
     <string name="category_no">No</string>
-    <string name="category_horoscope">Horoscope</string>
+    <string name="category_chaos">Chaos</string>
     <string name="category_bad_advice">Bad Advice</string>
     <string name="category_emotional_damage">Emotional Damage</string>
-    <string name="category_love_letters">Love Letters</string>
+    <string name="category_love">Love</string>
+    <string name="category_lust">Lust</string>
+    <string name="category_horoscope">Horoscope</string>
+    <string name="category_insults">Funny Insults</string>
 </resources>
