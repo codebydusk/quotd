@@ -14,6 +14,7 @@ import android.widget.RemoteViews
 import com.github.codebydusk.quotd_quoteoftheday.R
 import com.github.codebydusk.quotd_quoteoftheday.data.QuoteRepository
 import com.github.codebydusk.quotd_quoteoftheday.data.WidgetPrefsManager
+import com.github.codebydusk.quotd_quoteoftheday.emoji.KeywordEmojiDecorator
 
 /**
  * Unified AppWidgetProvider handling all widget variants (No/Horoscope × 4×1/4×2).
@@ -35,6 +36,9 @@ open class QuotdWidgetProvider : AppWidgetProvider() {
 
         private const val REFRESH_INTERVAL_MS = 60 * 60 * 1000L // 1 hour
         private const val REVERT_DELAY_MS = 2000L
+
+        /** Shared emoji decorator instance (stateless, thread-safe). */
+        private val emojiDecorator = KeywordEmojiDecorator()
 
         /** All receiver classes that need auto-refresh. */
         val ALL_RECEIVER_CLASSES: List<Class<out QuotdWidgetProvider>> = listOf(
@@ -82,10 +86,18 @@ open class QuotdWidgetProvider : AppWidgetProvider() {
             val fgColor = WidgetPrefsManager.getForegroundColor(context, appWidgetId)
             val quote = QuoteRepository.getRandomQuote(context, category)
 
+            // Store the original (emoji-free) quote for clipboard copy
             WidgetPrefsManager.setCurrentQuote(context, appWidgetId, quote)
 
+            // Apply emoji decoration if enabled for this widget
+            val displayText = if (WidgetPrefsManager.isEmojiEnabled(context, appWidgetId)) {
+                emojiDecorator.decorate(quote)
+            } else {
+                quote
+            }
+
             val layoutId = getLayoutForWidget(context, appWidgetId)
-            val views = buildRemoteViews(context, appWidgetId, layoutId, quote, bgColor, fgColor)
+            val views = buildRemoteViews(context, appWidgetId, layoutId, displayText, bgColor, fgColor)
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
 

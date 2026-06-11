@@ -20,6 +20,7 @@ No accounts. No internet. No tracking. Just words.
 - **8 quote categories** — No, Chaos, Bad Advice, Emotional Damage, Love, Lust, Horoscope, Funny Insults
 - **Two widget sizes** — 4×1 (compact) and 4×2 (expanded)
 - **Per-widget color customisation** — Each widget instance has its own background and text color
+- **Dynamic emoji augmentation** — Optional keyword-based emoji injection at runtime (toggle per widget)
 - **Tap to copy** — Tap the quote to copy it to your clipboard; widget shows "Copied!" for 2 seconds
 - **Refresh button** — Manual refresh on the right side of the widget
 - **Auto-refresh** — Quotes rotate automatically every 1 hour
@@ -34,6 +35,28 @@ No accounts. No internet. No tracking. Just words.
 - **Offline First** — Works anywhere, anytime
 - **Humor With Personality** — Every category has its own voice
 - **Highly Shareable** — Tap, copy, send
+
+### Emoji Engine
+
+The original quote JSON files are **always emoji-free**. Emojis are injected dynamically at runtime by the `KeywordEmojiDecorator` — a keyword-based system that scans quotes for contextually relevant words and sprinkles in emojis that feel natural, not random.
+
+**How it works:**
+- Scans quotes for 200+ keywords (whole-word, case-insensitive)
+- Picks one matching keyword and a relevant emoji
+- Chooses a placement strategy: inline (60%), suffix (25%), or prefix (15%)
+- 20% of the time: no emoji at all — not every quote needs one
+- 20% of the time: adds a second "reaction" emoji (😂, 💀, 🤷, etc.)
+
+**Example:**
+
+```
+Input:  "My calendar laughed when I tried to squeeze this in."
+Output: "My calendar 📅 laughed when I tried to squeeze this in."
+    or: "📅 My calendar laughed when I tried to squeeze this in."
+    or: "My calendar laughed when I tried to squeeze this in. 😂"
+```
+
+The same quote looks slightly different every time. Can be toggled off per widget in the configuration screen. Clipboard copy always gets the original, undecorated text.
 
 ---
 

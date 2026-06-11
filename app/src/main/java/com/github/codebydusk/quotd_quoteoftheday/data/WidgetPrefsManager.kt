@@ -15,6 +15,7 @@ object WidgetPrefsManager {
     private const val KEY_BG_COLOR = "bg_color_"
     private const val KEY_FG_COLOR = "fg_color_"
     private const val KEY_CURRENT_QUOTE = "current_quote_"
+    private const val KEY_EMOJI_ENABLED = "emoji_enabled_"
 
     // Defaults
     const val DEFAULT_BG_COLOR = 0xFF1A1A1A.toInt()
@@ -60,6 +61,15 @@ object WidgetPrefsManager {
         prefs(context).edit().putString(KEY_CURRENT_QUOTE + appWidgetId, quote).apply()
     }
 
+    // ── Emoji Toggle ──────────────────────────────────────────────────
+
+    fun isEmojiEnabled(context: Context, appWidgetId: Int): Boolean =
+        prefs(context).getBoolean(KEY_EMOJI_ENABLED + appWidgetId, true)
+
+    fun setEmojiEnabled(context: Context, appWidgetId: Int, enabled: Boolean) {
+        prefs(context).edit().putBoolean(KEY_EMOJI_ENABLED + appWidgetId, enabled).apply()
+    }
+
     // ── Cleanup ───────────────────────────────────────────────────────
 
     fun deletePrefs(context: Context, appWidgetId: Int) {
@@ -68,6 +78,7 @@ object WidgetPrefsManager {
             .remove(KEY_BG_COLOR + appWidgetId)
             .remove(KEY_FG_COLOR + appWidgetId)
             .remove(KEY_CURRENT_QUOTE + appWidgetId)
+            .remove(KEY_EMOJI_ENABLED + appWidgetId)
             .apply()
     }
 

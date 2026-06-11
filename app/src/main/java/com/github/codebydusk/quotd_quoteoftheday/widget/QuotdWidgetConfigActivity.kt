@@ -63,8 +63,8 @@ class QuotdWidgetConfigActivity : ComponentActivity() {
         setContent {
             WidgetConfigScreen(
                 defaultCategory = defaultCategory,
-                onApply = { category, bgColor, fgColor ->
-                    applyConfiguration(category, bgColor, fgColor)
+                onApply = { category, bgColor, fgColor, emojiEnabled ->
+                    applyConfiguration(category, bgColor, fgColor, emojiEnabled)
                 },
                 onCancel = { finish() }
             )
@@ -83,10 +83,11 @@ class QuotdWidgetConfigActivity : ComponentActivity() {
         }
     }
 
-    private fun applyConfiguration(category: String, bgColor: Int, fgColor: Int) {
+    private fun applyConfiguration(category: String, bgColor: Int, fgColor: Int, emojiEnabled: Boolean) {
         WidgetPrefsManager.setCategory(this, appWidgetId, category)
         WidgetPrefsManager.setBackgroundColor(this, appWidgetId, bgColor)
         WidgetPrefsManager.setForegroundColor(this, appWidgetId, fgColor)
+        WidgetPrefsManager.setEmojiEnabled(this, appWidgetId, emojiEnabled)
 
         // Trigger initial widget update
         val appWidgetManager = AppWidgetManager.getInstance(this)
@@ -105,7 +106,7 @@ class QuotdWidgetConfigActivity : ComponentActivity() {
 @Composable
 fun WidgetConfigScreen(
     defaultCategory: String,
-    onApply: (category: String, bgColor: Int, fgColor: Int) -> Unit,
+    onApply: (category: String, bgColor: Int, fgColor: Int, emojiEnabled: Boolean) -> Unit,
     onCancel: () -> Unit
 ) {
     val categories = listOf(
@@ -123,6 +124,7 @@ fun WidgetConfigScreen(
     var selectedPresetIndex by remember { mutableIntStateOf(0) }
     var bgColor by remember { mutableIntStateOf(WidgetPrefsManager.DEFAULT_BG_COLOR) }
     var fgColor by remember { mutableIntStateOf(WidgetPrefsManager.DEFAULT_FG_COLOR) }
+    var emojiEnabled by remember { mutableStateOf(true) }
 
     val bgDark = Color(0xFF0D0D0D)
     val surfaceColor = Color(0xFF1A1A1A)
@@ -245,6 +247,54 @@ fun WidgetConfigScreen(
                 }
             }
 
+            // ── Emoji Toggle ──
+            Text(
+                text = "EMOJI",
+                fontSize = 11.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = textSecondary,
+                letterSpacing = 1.5.sp
+            )
+
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp)),
+                color = surfaceColor,
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Dynamic emoji",
+                            fontSize = 15.sp,
+                            color = textPrimary,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Text(
+                            text = "Sprinkle contextual emojis into quotes",
+                            fontSize = 12.sp,
+                            color = textSecondary
+                        )
+                    }
+                    Switch(
+                        checked = emojiEnabled,
+                        onCheckedChange = { emojiEnabled = it },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color(0xFF0D0D0D),
+                            checkedTrackColor = textPrimary,
+                            uncheckedThumbColor = textSecondary,
+                            uncheckedTrackColor = surfaceColor,
+                            uncheckedBorderColor = Color(0xFF333333)
+                        )
+                    )
+                }
+            }
+
             // ── Live Preview ──
             Text(
                 text = "PREVIEW",
@@ -305,7 +355,7 @@ fun WidgetConfigScreen(
                 }
 
                 Button(
-                    onClick = { onApply(selectedCategory, bgColor, fgColor) },
+                    onClick = { onApply(selectedCategory, bgColor, fgColor, emojiEnabled) },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
