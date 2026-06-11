@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.png" alt="quotd banner" width="100%">
+</p>
+
 # quotd — Quote of the Day
 
 > A widget full of reasons, wisdom, chaos, and emotional damage.
@@ -105,6 +109,8 @@ You can place multiple widgets on the same home screen, each with:
 ### 🚫 No
 Thousands of creative, funny, professional, sarcastic, and absurd reasons to decline anything. From polite deflections to excuses involving time paradoxes and imaginary pets.
 
+*Quotes for this category are provided as-is from the [no-as-a-service](https://github.com/hotheadhacker/no-as-a-service) repository.*
+
 ### 🌀 Chaos
 Sarcastic observations about life, reality, and the universe. For when you need to feel seen by the void.
 
@@ -173,6 +179,12 @@ adb install app/build/outputs/apk/debug/app-debug.apk
 3. Add string resources in `strings.xml`
 4. Add the category entry in `QuotdWidgetConfigActivity.kt`
 5. Optionally, create widget info XML files in `res/xml/` and register new receiver subclasses in `AndroidManifest.xml` for a dedicated launcher shortcut
+
+---
+
+## Credits
+
+- Quotes for the "No" category are provided as-is from the [no-as-a-service](https://github.com/hotheadhacker/no-as-a-service) repository by [@hotheadhacker](https://github.com/hotheadhacker).
 
 ---
 
