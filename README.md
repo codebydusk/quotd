@@ -184,6 +184,7 @@ adb install app/build/outputs/apk/debug/app-debug.apk
 
 ## Credits
 
+- Huge thanks to [@danny5395](https://github.com/danny5395) for the original app idea!
 - Quotes for the "No" category are provided as-is from the [no-as-a-service](https://github.com/hotheadhacker/no-as-a-service) repository by [@hotheadhacker](https://github.com/hotheadhacker).
 
 ---
