@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark Mode Colors for Launcher Icon -->
+    <color name="ic_launcher_bg">#1A1A1A</color>
+    <color name="ic_launcher_fg">#F5F5F5</color>
+    <color name="ic_launcher_fg_alpha">#80F5F5F5</color>
+</resources>
