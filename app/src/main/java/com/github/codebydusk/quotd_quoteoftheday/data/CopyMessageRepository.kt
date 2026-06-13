@@ -8,63 +8,89 @@ import com.google.gson.JsonParser
 import kotlin.random.Random
 
 /**
+ * Copy-success message parsed from a message pack.
+ * Older string-only JSON entries are migrated to this model in memory as common messages.
+ */
+data class CopyMessage(
+    val text: String,
+    val rarity: Rarity,
+    val enabled: Boolean = true
+)
+
+enum class Rarity(val selectionWeight: Int) {
+    COMMON(70),
+    RARE(20),
+    EPIC(8),
+    LEGENDARY(2);
+
+    val jsonName: String
+        get() = name.lowercase()
+
+    companion object {
+        fun from(value: String?): Rarity =
+            entries.firstOrNull { it.name.equals(value, ignoreCase = true) } ?: COMMON
+    }
+}
+
+/**
  * Reads copy-success message packs from assets and returns non-repeating random messages.
- *
- * The current copy.json schema is a JSON array of strings. Object entries are also supported
- * so future packs can add metadata such as rarity without changing the call site:
- * { "text": "Forbidden knowledge acquired.", "rarity": "legendary" }
  */
 object CopyMessageRepository {
 
     private const val TAG = "CopyMessageRepository"
+    private const val MAX_RARITY_STREAK = 3
     const val FALLBACK_MESSAGE = "Copied! \uD83D\uDCCB"
 
     enum class MessagePack(val assetFileName: String) {
         COPY("copy.json")
     }
 
-    enum class MessageRarity(val weight: Int) {
-        COMMON(100),
-        UNCOMMON(40),
-        RARE(15),
-        EPIC(5),
-        LEGENDARY(1);
-
-        companion object {
-            fun from(value: String?): MessageRarity =
-                entries.firstOrNull { it.name.equals(value, ignoreCase = true) } ?: COMMON
-        }
-    }
-
-    data class CopyMessage(
+    private data class LastSelection(
         val text: String,
-        val rarity: MessageRarity = MessageRarity.COMMON
+        val rarity: Rarity,
+        val rarityStreak: Int
     )
 
     private val cache = mutableMapOf<MessagePack, List<CopyMessage>>()
-    private val lastMessageByPack = mutableMapOf<MessagePack, String>()
+    private val lastSelectionByPack = mutableMapOf<MessagePack, LastSelection>()
 
     fun getRandomMessage(context: Context): String =
         getRandomMessage(context, MessagePack.COPY)
 
     fun getRandomMessage(context: Context, messagePack: MessagePack): String = synchronized(this) {
-        val messages = getMessages(context.applicationContext, messagePack)
-        if (messages.isEmpty()) return FALLBACK_MESSAGE
+        val messages = getMessages(context.applicationContext, messagePack).filter { it.enabled }
+        if (messages.isEmpty()) return@synchronized FALLBACK_MESSAGE
 
-        val eligibleMessages = if (messages.size == 1) {
+        val lastSelection = lastSelectionByPack[messagePack]
+        val textEligibleMessages = if (messages.size == 1) {
             messages
         } else {
-            messages.filterNot { it.text == lastMessageByPack[messagePack] }
+            messages.filterNot { it.text == lastSelection?.text }.ifEmpty { messages }
         }
 
-        val selected = eligibleMessages.randomWeighted()
-        lastMessageByPack[messagePack] = selected.text
+        val rarityEligibleMessages = if (
+            lastSelection != null &&
+            lastSelection.rarityStreak >= MAX_RARITY_STREAK &&
+            textEligibleMessages.any { it.rarity != lastSelection.rarity }
+        ) {
+            textEligibleMessages.filterNot { it.rarity == lastSelection.rarity }
+        } else {
+            textEligibleMessages
+        }
+
+        val selected = rarityEligibleMessages.randomByRarityWeight()
+        val rarityStreak = if (selected.rarity == lastSelection?.rarity) {
+            lastSelection.rarityStreak + 1
+        } else {
+            1
+        }
+        lastSelectionByPack[messagePack] = LastSelection(selected.text, selected.rarity, rarityStreak)
         selected.text
     }
 
     fun clearCache() = synchronized(this) {
         cache.clear()
-        lastMessageByPack.clear()
+        lastSelectionByPack.clear()
     }
 
     private fun getMessages(context: Context, messagePack: MessagePack): List<CopyMessage> {
@@ -85,7 +111,7 @@ object CopyMessageRepository {
 
     private fun parseMessages(json: String): List<CopyMessage> {
         val root = JsonParser.parseString(json)
-        if (!root.isJsonArray) return emptyList()
+        require(root.isJsonArray) { "Message pack root must be a JSON array." }
 
         return root.asJsonArray.mapNotNull { element ->
             element.toCopyMessage()
@@ -94,7 +120,9 @@ object CopyMessageRepository {
 
     private fun JsonElement.toCopyMessage(): CopyMessage? = when {
         isJsonPrimitive && asJsonPrimitive.isString -> {
-            asString.takeIf { it.isNotBlank() }?.let { CopyMessage(text = it) }
+            asString.takeIf { it.isNotBlank() }?.let { text ->
+                CopyMessage(text = text, rarity = Rarity.COMMON)
+            }
         }
 
         isJsonObject -> asJsonObject.toCopyMessage()
@@ -109,19 +137,25 @@ object CopyMessageRepository {
             ?: return null
         val rarity = get("rarity")?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }
             ?.asString
+        val enabled = get("enabled")?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isBoolean }
+            ?.asBoolean
+            ?: true
 
-        return CopyMessage(text = text, rarity = MessageRarity.from(rarity))
+        return CopyMessage(text = text, rarity = Rarity.from(rarity), enabled = enabled)
     }
 
-    private fun List<CopyMessage>.randomWeighted(): CopyMessage {
-        val totalWeight = sumOf { it.rarity.weight }
+    private fun List<CopyMessage>.randomByRarityWeight(): CopyMessage {
+        val messagesByRarity = groupBy { it.rarity }
+        val availableRarities = Rarity.entries.filter { rarity ->
+            messagesByRarity[rarity].orEmpty().isNotEmpty()
+        }
+        val totalWeight = availableRarities.sumOf { it.selectionWeight }
         var target = Random.nextInt(totalWeight)
-
-        for (message in this) {
-            target -= message.rarity.weight
-            if (target < 0) return message
+        val selectedRarity = availableRarities.first { rarity ->
+            target -= rarity.selectionWeight
+            target < 0
         }
 
-        return last()
+        return messagesByRarity.getValue(selectedRarity).random()
     }
 }

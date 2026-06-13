@@ -1,111 +1,402 @@
 [
-  "That's a copy, Houston. 📋",
-  "Snagged. Use it wisely. 🏯",
-  "Ctrl+C executed. Godspeed. ⚡",
-  "In your clipboard. No refunds. 📱",
-  "Quote extracted with prejudice. 🔪",
-  "Pasted into your soul. 🌀",
-  "That quote is now legally yours. ⚖️",
-  "Copy secured. Mission complete. ✅",
-  "Yours now. Don't abuse it. 🤐",
-  "Clipboard hijacked. You're welcome. 😎",
-
-  "The deed is done. 📜",
-  "Successfully stolen. 🚔",
-  "Pocketed for later. 🎒",
-  "Acquired without violence. 🕊️",
-  "Data liberated. 🗽",
-  "Quote rescued from obscurity. 🚁",
-  "Transferred to a safer location. 📦",
-  "Clipboard updated successfully. 🛠️",
-  "Smuggled into memory. 🕶️",
-  "Secured behind enemy lines. 🎯",
-
-  "Achievement unlocked: Copycat. 🏆",
-  "New item acquired. 🎁",
-  "Loot obtained. 📦",
-  "Inventory updated. 🎒",
-  "Quest complete. ⚔️",
-  "Rare drop collected. ✨",
-  "Item added to stash. 🗃️",
-  "Quote captured successfully. 🎣",
-  "Checkpoint reached. 🔥",
-  "Save game updated. 💾",
-
-  "The clipboard gods approve. 🙏",
-  "The council has allowed it. 👑",
-  "Ancient texts recovered. 📚",
-  "Prophecy archived. 🔮",
-  "Knowledge preserved. 🧠",
-  "Wisdom successfully stolen. 🦉",
-  "Artifact secured. 🏺",
-  "Scroll acquired. 📜",
-  "The archives grow stronger. 🏛️",
-  "A scholar somewhere is proud. 🎓",
-
-  "Copy successful. Chaos pending. 🌪️",
-  "Stored for future poor decisions. 🍻",
-  "Saved for a dramatic moment. 🎭",
-  "Future-you requested this. ⏳",
-  "This will age interestingly. 🍷",
-  "Evidence collected. 📸",
-  "Potentially dangerous information acquired. ☢️",
-  "A terrible idea begins here. 💡",
-  "You've gained forbidden knowledge. 🐍",
-  "Use responsibly. Or don't. 🤷",
-
-  "Clipboard fed successfully. 🍽️",
-  "Fresh quote delivered. 🚚",
-  "Packaged and shipped. 📦",
-  "Signed, sealed, copied. ✉️",
-  "Export complete. 🚀",
-  "Quote relocated. 🏠",
-  "Content migration successful. 🌉",
-  "Clipboard now contains premium nonsense. ⭐",
-  "Operation completed successfully-ish. 👍",
-  "Task failed successfully. 🐛",
-
-  "One copy closer to enlightenment. ☸️",
-  "The quote chose you. ✨",
-  "Destiny updated. 🌌",
-  "Fate has been copied. 🧬",
-  "The universe took notes. 🌠",
-  "Cosmic paperwork filed. 🗂️",
-  "Timeline adjusted accordingly. ⏰",
-  "Reality synced. 🔄",
-  "Narrative updated. 📖",
-  "Character development acquired. 📈",
-
-  "Clipboard speedrun complete. 🏃",
-  "Combo chain maintained. 🎮",
-  "Critical copy! 💥",
-  "Direct hit. 🎯",
-  "Clipboard +1. 📋",
-  "Maximum efficiency achieved. ⚙️",
-  "Action performed expertly. 🎩",
-  "Skill issue avoided. 😌",
-  "Perfect execution. 🥇",
-  "Copy operation carried by instinct. 🦎",
-
-  "Yoink. 🦝",
-  "Borrowed indefinitely. 👀",
-  "Mine now. 🤝",
-  "Absolutely confiscated. 🚨",
-  "Acquired through legal means. Probably. ⚖️",
-  "Strategically relocated. 🧭",
-  "Transferred to your custody. 🛡️",
-  "Clipboard says thanks. 💌",
-  "This quote has been adopted. 🏡",
-  "Safely tucked away. 🛏️",
-
-  "Mission accomplished. Time to pretend it was your idea. 😏",
-  "Clipboard loaded and ready. 🔫",
-  "Freshly copied and lightly seasoned. 🌶️",
-  "One quote, extra crispy. 🍗",
-  "This quote now pays rent in your clipboard. 🏠",
-  "Filed under 'important probably'. 📂",
-  "The operation was a complete success. Nobody saw anything. 🕵️",
-  "Congratulations on your latest acquisition. 🧐",
-  "Clipboard upgraded successfully. 🚀",
-  "And just like that, it vanished into your clipboard. 🎩✨"
+  {
+    "text": "That's a copy, Houston. 📋",
+    "rarity": "common"
+  },
+  {
+    "text": "Snagged. Use it wisely. 🏯",
+    "rarity": "common"
+  },
+  {
+    "text": "Ctrl+C executed. Godspeed. ⚡",
+    "rarity": "common"
+  },
+  {
+    "text": "In your clipboard. No refunds. 📱",
+    "rarity": "common"
+  },
+  {
+    "text": "Quote extracted with prejudice. 🔪",
+    "rarity": "common"
+  },
+  {
+    "text": "Pasted into your soul. 🌀",
+    "rarity": "common"
+  },
+  {
+    "text": "That quote is now legally yours. ⚖️",
+    "rarity": "common"
+  },
+  {
+    "text": "Copy secured. Mission complete. ✅",
+    "rarity": "common"
+  },
+  {
+    "text": "Yours now. Don't abuse it. 🤐",
+    "rarity": "common"
+  },
+  {
+    "text": "Clipboard hijacked. You're welcome. 😎",
+    "rarity": "common"
+  },
+  {
+    "text": "The deed is done. 📜",
+    "rarity": "common"
+  },
+  {
+    "text": "Successfully stolen. 🚔",
+    "rarity": "common"
+  },
+  {
+    "text": "Pocketed for later. 🎒",
+    "rarity": "common"
+  },
+  {
+    "text": "Acquired without violence. 🕊️",
+    "rarity": "common"
+  },
+  {
+    "text": "Data liberated. 🗽",
+    "rarity": "rare"
+  },
+  {
+    "text": "Quote rescued from obscurity. 🚁",
+    "rarity": "common"
+  },
+  {
+    "text": "Transferred to a safer location. 📦",
+    "rarity": "common"
+  },
+  {
+    "text": "Clipboard updated successfully. 🛠️",
+    "rarity": "common"
+  },
+  {
+    "text": "Smuggled into memory. 🕶️",
+    "rarity": "rare"
+  },
+  {
+    "text": "Secured behind enemy lines. 🎯",
+    "rarity": "rare"
+  },
+  {
+    "text": "Achievement unlocked: Copycat. 🏆",
+    "rarity": "rare"
+  },
+  {
+    "text": "New item acquired. 🎁",
+    "rarity": "common"
+  },
+  {
+    "text": "Loot obtained. 📦",
+    "rarity": "common"
+  },
+  {
+    "text": "Inventory updated. 🎒",
+    "rarity": "common"
+  },
+  {
+    "text": "Quest complete. ⚔️",
+    "rarity": "rare"
+  },
+  {
+    "text": "Rare drop collected. ✨",
+    "rarity": "rare"
+  },
+  {
+    "text": "Item added to stash. 🗃️",
+    "rarity": "common"
+  },
+  {
+    "text": "Quote captured successfully. 🎣",
+    "rarity": "common"
+  },
+  {
+    "text": "Checkpoint reached. 🔥",
+    "rarity": "common"
+  },
+  {
+    "text": "Save game updated. 💾",
+    "rarity": "common"
+  },
+  {
+    "text": "The clipboard gods approve. 🙏",
+    "rarity": "rare"
+  },
+  {
+    "text": "The council has allowed it. 👑",
+    "rarity": "rare"
+  },
+  {
+    "text": "Ancient texts recovered. 📚",
+    "rarity": "rare"
+  },
+  {
+    "text": "Prophecy archived. 🔮",
+    "rarity": "rare"
+  },
+  {
+    "text": "Knowledge preserved. 🧠",
+    "rarity": "common"
+  },
+  {
+    "text": "Wisdom successfully stolen. 🦉",
+    "rarity": "rare"
+  },
+  {
+    "text": "Artifact secured. 🏺",
+    "rarity": "rare"
+  },
+  {
+    "text": "Scroll acquired. 📜",
+    "rarity": "rare"
+  },
+  {
+    "text": "The archives grow stronger. 🏛️",
+    "rarity": "rare"
+  },
+  {
+    "text": "A scholar somewhere is proud. 🎓",
+    "rarity": "rare"
+  },
+  {
+    "text": "Copy successful. Chaos pending. 🌪️",
+    "rarity": "common"
+  },
+  {
+    "text": "Stored for future poor decisions. 🍻",
+    "rarity": "common"
+  },
+  {
+    "text": "Saved for a dramatic moment. 🎭",
+    "rarity": "common"
+  },
+  {
+    "text": "Future-you requested this. ⏳",
+    "rarity": "common"
+  },
+  {
+    "text": "This will age interestingly. 🍷",
+    "rarity": "common"
+  },
+  {
+    "text": "Evidence collected. 📸",
+    "rarity": "common"
+  },
+  {
+    "text": "Potentially dangerous information acquired. ☢️",
+    "rarity": "epic"
+  },
+  {
+    "text": "A terrible idea begins here. 💡",
+    "rarity": "common"
+  },
+  {
+    "text": "🏆 LEGENDARY DROP:\nYou've gained forbidden knowledge. 🐍",
+    "rarity": "legendary"
+  },
+  {
+    "text": "Use responsibly. Or don't. 🤷",
+    "rarity": "common"
+  },
+  {
+    "text": "Clipboard fed successfully. 🍽️",
+    "rarity": "common"
+  },
+  {
+    "text": "Fresh quote delivered. 🚚",
+    "rarity": "common"
+  },
+  {
+    "text": "Packaged and shipped. 📦",
+    "rarity": "common"
+  },
+  {
+    "text": "Signed, sealed, copied. ✉️",
+    "rarity": "common"
+  },
+  {
+    "text": "Export complete. 🚀",
+    "rarity": "common"
+  },
+  {
+    "text": "Quote relocated. 🏠",
+    "rarity": "common"
+  },
+  {
+    "text": "Content migration successful. 🌉",
+    "rarity": "common"
+  },
+  {
+    "text": "Clipboard now contains premium nonsense. ⭐",
+    "rarity": "rare"
+  },
+  {
+    "text": "Operation completed successfully-ish. 👍",
+    "rarity": "common"
+  },
+  {
+    "text": "Task failed successfully. 🐛",
+    "rarity": "rare"
+  },
+  {
+    "text": "One copy closer to enlightenment. ☸️",
+    "rarity": "epic"
+  },
+  {
+    "text": "The quote chose you. ✨",
+    "rarity": "epic"
+  },
+  {
+    "text": "Destiny updated. 🌌",
+    "rarity": "epic"
+  },
+  {
+    "text": "Fate has been copied. 🧬",
+    "rarity": "epic"
+  },
+  {
+    "text": "The universe took notes. 🌠",
+    "rarity": "epic"
+  },
+  {
+    "text": "Cosmic paperwork filed. 🗂️",
+    "rarity": "common"
+  },
+  {
+    "text": "🌌 LEGENDARY TIMELINE:\nTimeline adjusted accordingly. ⏰ The universe is watching. 👁️",
+    "rarity": "legendary"
+  },
+  {
+    "text": "Reality synced. 🔄",
+    "rarity": "epic"
+  },
+  {
+    "text": "Narrative updated. 📖",
+    "rarity": "epic"
+  },
+  {
+    "text": "Character development acquired. 📈",
+    "rarity": "rare"
+  },
+  {
+    "text": "Clipboard speedrun complete. 🏃",
+    "rarity": "common"
+  },
+  {
+    "text": "Combo chain maintained. 🎮",
+    "rarity": "rare"
+  },
+  {
+    "text": "Critical copy! 💥",
+    "rarity": "common"
+  },
+  {
+    "text": "Direct hit. 🎯",
+    "rarity": "common"
+  },
+  {
+    "text": "Clipboard +1. 📋",
+    "rarity": "common"
+  },
+  {
+    "text": "Maximum efficiency achieved. ⚙️",
+    "rarity": "common"
+  },
+  {
+    "text": "Action performed expertly. 🎩",
+    "rarity": "common"
+  },
+  {
+    "text": "Skill issue avoided. 😌",
+    "rarity": "common"
+  },
+  {
+    "text": "Perfect execution. 🥇",
+    "rarity": "rare"
+  },
+  {
+    "text": "Copy operation carried by instinct. 🦎",
+    "rarity": "common"
+  },
+  {
+    "text": "Yoink. 🦝",
+    "rarity": "common"
+  },
+  {
+    "text": "Borrowed indefinitely. 👀",
+    "rarity": "common"
+  },
+  {
+    "text": "Mine now. 🤝",
+    "rarity": "common"
+  },
+  {
+    "text": "Absolutely confiscated. 🚨",
+    "rarity": "common"
+  },
+  {
+    "text": "Acquired through legal means. Probably. ⚖️",
+    "rarity": "common"
+  },
+  {
+    "text": "Strategically relocated. 🧭",
+    "rarity": "common"
+  },
+  {
+    "text": "Transferred to your custody. 🛡️",
+    "rarity": "common"
+  },
+  {
+    "text": "Clipboard says thanks. 💌",
+    "rarity": "common"
+  },
+  {
+    "text": "This quote has been adopted. 🏡",
+    "rarity": "common"
+  },
+  {
+    "text": "Safely tucked away. 🛏️",
+    "rarity": "common"
+  },
+  {
+    "text": "Mission accomplished. Time to pretend it was your idea. 😏",
+    "rarity": "common"
+  },
+  {
+    "text": "Clipboard loaded and ready. 🔫",
+    "rarity": "common"
+  },
+  {
+    "text": "Freshly copied and lightly seasoned. 🌶️",
+    "rarity": "common"
+  },
+  {
+    "text": "One quote, extra crispy. 🍗",
+    "rarity": "common"
+  },
+  {
+    "text": "This quote now pays rent in your clipboard. 🏠",
+    "rarity": "common"
+  },
+  {
+    "text": "Filed under 'important probably'. 📂",
+    "rarity": "common"
+  },
+  {
+    "text": "The operation was a complete success. Nobody saw anything. 🕵️",
+    "rarity": "common"
+  },
+  {
+    "text": "Congratulations on your latest acquisition. 🧐",
+    "rarity": "common"
+  },
+  {
+    "text": "Clipboard upgraded successfully. 🚀",
+    "rarity": "common"
+  },
+  {
+    "text": "And just like that, it vanished into your clipboard. 🎩✨",
+    "rarity": "common"
+  }
 ]
