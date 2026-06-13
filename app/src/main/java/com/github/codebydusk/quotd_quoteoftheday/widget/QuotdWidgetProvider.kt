@@ -12,6 +12,7 @@ import android.content.Intent
 import android.os.SystemClock
 import android.widget.RemoteViews
 import com.github.codebydusk.quotd_quoteoftheday.R
+import com.github.codebydusk.quotd_quoteoftheday.data.CopyMessageRepository
 import com.github.codebydusk.quotd_quoteoftheday.data.QuoteRepository
 import com.github.codebydusk.quotd_quoteoftheday.data.WidgetPrefsManager
 import com.github.codebydusk.quotd_quoteoftheday.emoji.KeywordEmojiDecorator
@@ -234,41 +235,13 @@ open class QuotdWidgetProvider : AppWidgetProvider() {
                 val clip = ClipData.newPlainText("quotd", quote)
                 clipboard.setPrimaryClip(clip)
 
-                // Show "Copied!" in the widget
+                // Show a copy-success message in the widget
                 val fgColor = WidgetPrefsManager.getForegroundColor(context, appWidgetId)
                 val bgColor = WidgetPrefsManager.getBackgroundColor(context, appWidgetId)
                 val layoutId = getLayoutForWidget(context, appWidgetId)
-                val views = RemoteViews(context.packageName, layoutId)
-
-                views.setTextViewText(R.id.widget_text, context.getString(R.string.copied))
-                views.setTextColor(R.id.widget_text, fgColor)
-                views.setInt(R.id.widget_root, "setBackgroundColor", bgColor)
-                views.setInt(R.id.widget_refresh, "setColorFilter", fgColor)
-
-                // Re-attach click listeners
+                val copyMessage = CopyMessageRepository.getRandomMessage(context)
+                val views = buildRemoteViews(context, appWidgetId, layoutId, copyMessage, bgColor, fgColor)
                 val receiverClass = getReceiverClass(context, appWidgetId)
-                val copyIntent = Intent(context, receiverClass).apply {
-                    action = ACTION_COPY
-                    putExtra(EXTRA_WIDGET_ID, appWidgetId)
-                }
-                views.setOnClickPendingIntent(
-                    R.id.widget_text,
-                    PendingIntent.getBroadcast(
-                        context, appWidgetId * 10 + 1, copyIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                    )
-                )
-                val refreshIntent = Intent(context, receiverClass).apply {
-                    action = ACTION_REFRESH
-                    putExtra(EXTRA_WIDGET_ID, appWidgetId)
-                }
-                views.setOnClickPendingIntent(
-                    R.id.widget_refresh,
-                    PendingIntent.getBroadcast(
-                        context, appWidgetId * 10 + 2, refreshIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                    )
-                )
 
                 appWidgetManager.updateAppWidget(appWidgetId, views)
 
@@ -307,37 +280,7 @@ open class QuotdWidgetProvider : AppWidgetProvider() {
                 val bgColor = WidgetPrefsManager.getBackgroundColor(context, appWidgetId)
                 val layoutId = getLayoutForWidget(context, appWidgetId)
 
-                val receiverClass = getReceiverClass(context, appWidgetId)
-                val views = RemoteViews(context.packageName, layoutId)
-
-                views.setTextViewText(R.id.widget_text, quote)
-                views.setTextColor(R.id.widget_text, fgColor)
-                views.setInt(R.id.widget_root, "setBackgroundColor", bgColor)
-                views.setInt(R.id.widget_refresh, "setColorFilter", fgColor)
-
-                // Re-attach click listeners
-                val copyIntent = Intent(context, receiverClass).apply {
-                    action = ACTION_COPY
-                    putExtra(EXTRA_WIDGET_ID, appWidgetId)
-                }
-                views.setOnClickPendingIntent(
-                    R.id.widget_text,
-                    PendingIntent.getBroadcast(
-                        context, appWidgetId * 10 + 1, copyIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                    )
-                )
-                val refreshIntent = Intent(context, receiverClass).apply {
-                    action = ACTION_REFRESH
-                    putExtra(EXTRA_WIDGET_ID, appWidgetId)
-                }
-                views.setOnClickPendingIntent(
-                    R.id.widget_refresh,
-                    PendingIntent.getBroadcast(
-                        context, appWidgetId * 10 + 2, refreshIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                    )
-                )
+                val views = buildRemoteViews(context, appWidgetId, layoutId, quote, bgColor, fgColor)
 
                 appWidgetManager.updateAppWidget(appWidgetId, views)
             }

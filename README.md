@@ -25,7 +25,7 @@ No accounts. No internet. No tracking. Just words.
 - **Two widget sizes** — 4×1 (compact) and 4×2 (expanded)
 - **Per-widget color customisation** — Each widget instance has its own background and text color
 - **Dynamic emoji augmentation** — Optional keyword-based emoji injection at runtime (toggle per widget)
-- **Tap to copy** — Tap the quote to copy it to your clipboard; widget shows "Copied!" for 2 seconds
+- **Tap to copy** — Tap the quote to copy it to your clipboard; widget shows a random copy-success message for 2 seconds
 - **Refresh button** — Manual refresh on the right side of the widget
 - **Auto-refresh** — Quotes rotate automatically every 1 hour
 - **Offline-first** — All quotes are bundled locally in JSON; no internet required
