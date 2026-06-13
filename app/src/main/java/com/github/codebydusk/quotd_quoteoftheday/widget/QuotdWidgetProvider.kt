@@ -282,11 +282,23 @@ open class QuotdWidgetProvider : AppWidgetProvider() {
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
                 val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                alarmManager.setExact(
-                    AlarmManager.ELAPSED_REALTIME,
-                    SystemClock.elapsedRealtime() + REVERT_DELAY_MS,
-                    revertPending
-                )
+                try {
+                    alarmManager.setExact(
+                        AlarmManager.ELAPSED_REALTIME,
+                        SystemClock.elapsedRealtime() + REVERT_DELAY_MS,
+                        revertPending
+                    )
+                } catch (e: SecurityException) {
+                    // Fallback for Android 14+ (e.g. Realme UI 5) where EXACT_ALARM is denied by default
+                    val pendingResult = goAsync()
+                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                        try {
+                            context.sendBroadcast(revertIntent)
+                        } finally {
+                            pendingResult.finish()
+                        }
+                    }, REVERT_DELAY_MS)
+                }
             }
 
             ACTION_REVERT -> {
