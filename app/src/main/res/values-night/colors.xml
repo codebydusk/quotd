@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Dark Mode Colors for Launcher Icon -->
-    <color name="ic_launcher_bg">#1A1A1A</color>
+    <!-- Launcher icon -->
+    <color name="ic_launcher_bg">#0D0D0D</color>
+    <color name="ic_launcher_bg_lift">#171717</color>
+    <color name="ic_launcher_card">#F5F5F5</color>
+    <color name="ic_launcher_ink">#171717</color>
+    <color name="ic_launcher_muted">#6D6D6D</color>
+    <color name="ic_launcher_accent">#B7FF3C</color>
+    <color name="ic_launcher_accent_dim">#22B7FF3C</color>
+    <color name="ic_launcher_shadow">#66000000</color>
     <color name="ic_launcher_fg">#F5F5F5</color>
     <color name="ic_launcher_fg_alpha">#80F5F5F5</color>
 </resources>

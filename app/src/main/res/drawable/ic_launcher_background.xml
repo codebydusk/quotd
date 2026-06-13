@@ -7,4 +7,10 @@
     <path
         android:fillColor="@color/ic_launcher_bg"
         android:pathData="M0,0h108v108H0z" />
+    <path
+        android:fillColor="@color/ic_launcher_bg_lift"
+        android:pathData="M0,78 C18,68 36,68 54,78 C72,88 90,88 108,78 V108 H0 Z" />
+    <path
+        android:fillColor="@color/ic_launcher_accent_dim"
+        android:pathData="M86,0 H108 V22 L92,38 H76 L108,6 V0 Z" />
 </vector>

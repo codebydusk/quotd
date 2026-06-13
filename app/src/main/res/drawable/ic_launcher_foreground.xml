@@ -3,15 +3,24 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Opening quote mark ❝ -->
-    <path
-        android:fillColor="@color/ic_launcher_fg"
-        android:pathData="M38.5,42.5c0,-5.5 4.5,-10 10,-10c5.5,0 10,4.5 10,10c0,5.5 -4.5,10 -10,10c-1.2,0 -2.3,-0.2 -3.4,-0.6c-1.5,4.2 -4.5,7.8 -8.6,10.1c-1,-0.5 -1.5,-1.6 -1.2,-2.7c1.8,-3.8 3.2,-7.4 3.2,-11.3c0,-0.2 0,-0.3 0,-0.5C36.3,47 34.5,44.9 38.5,42.5z" />
-    <path
-        android:fillColor="@color/ic_launcher_fg"
-        android:pathData="M59.5,42.5c0,-5.5 4.5,-10 10,-10c5.5,0 10,4.5 10,10c0,5.5 -4.5,10 -10,10c-1.2,0 -2.3,-0.2 -3.4,-0.6c-1.5,4.2 -4.5,7.8 -8.6,10.1c-1,-0.5 -1.5,-1.6 -1.2,-2.7c1.8,-3.8 3.2,-7.4 3.2,-11.3c0,-0.2 0,-0.3 0,-0.5C57.3,47 55.5,44.9 59.5,42.5z" />
-    <!-- Small "q" accent at bottom -->
-    <path
-        android:fillColor="@color/ic_launcher_fg_alpha"
-        android:pathData="M48,68l4,0l0,6c0,1.1 -0.9,2 -2,2c-1.1,0 -2,-0.9 -2,-2z" />
+    <group
+        android:pivotX="54"
+        android:pivotY="54"
+        android:rotation="-7">
+        <path
+            android:fillColor="@color/ic_launcher_shadow"
+            android:pathData="M34,33 H77 C84.2,33 90,38.8 90,46 V67 C90,74.2 84.2,80 77,80 H65 L57,88 C55.4,89.6 52,88.5 52,86.1 V80 H34 C26.8,80 21,74.2 21,67 V46 C21,38.8 26.8,33 34,33 Z" />
+        <path
+            android:fillColor="@color/ic_launcher_card"
+            android:pathData="M33,28 H75 C81.6,28 87,33.4 87,40 V64 C87,70.6 81.6,76 75,76 H63 L55,84 C53.4,85.6 51,84.5 51,82.2 V76 H33 C26.4,76 21,70.6 21,64 V40 C21,33.4 26.4,28 33,28 Z" />
+        <path
+            android:fillColor="@color/ic_launcher_accent"
+            android:pathData="M34,42 C34,38.7 36.7,36 40,36 H43 V42 H40 C39,42 38,43 38,44 V45 H44 V55 H34 V42 Z M47,42 C47,38.7 49.7,36 53,36 H56 V42 H53 C52,42 51,43 51,44 V45 H57 V55 H47 V42 Z" />
+        <path
+            android:fillColor="@color/ic_launcher_ink"
+            android:pathData="M63,42 H76 C77.4,42 78.5,43.1 78.5,44.5 C78.5,45.9 77.4,47 76,47 H63 C61.6,47 60.5,45.9 60.5,44.5 C60.5,43.1 61.6,42 63,42 Z M34,61 H73 C74.4,61 75.5,62.1 75.5,63.5 C75.5,64.9 74.4,66 73,66 H34 C32.6,66 31.5,64.9 31.5,63.5 C31.5,62.1 32.6,61 34,61 Z" />
+        <path
+            android:fillColor="@color/ic_launcher_muted"
+            android:pathData="M63,52 H70 C71.4,52 72.5,53.1 72.5,54.5 C72.5,55.9 71.4,57 70,57 H63 C61.6,57 60.5,55.9 60.5,54.5 C60.5,53.1 61.6,52 63,52 Z M76,52 H79 C80.4,52 81.5,53.1 81.5,54.5 C81.5,55.9 80.4,57 79,57 H76 C74.6,57 73.5,55.9 73.5,54.5 C73.5,53.1 74.6,52 76,52 Z" />
+    </group>
 </vector>
