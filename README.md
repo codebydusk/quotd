@@ -21,8 +21,9 @@ No accounts. No internet. No tracking. Just words.
 
 ## Features
 
-- **9 quote categories** — No, Chaos, Bad Advice, Emotional Damage, Love, Lust, Horoscope, Funny Insults, Office Excuses
+- **8 quote categories** — No, Chaos, Bad Advice, Emotional Damage, Love, Horoscope, Funny Insults, Office Excuses
 - **Resizable layouts** — Starts at 4×1 and expands to 4×2
+- **Typography customisation** — Adjust Font Size and Font Face for each widget
 - **Per-widget color customisation** — Each widget instance has its own background and text color
 - **Dynamic emoji augmentation** — Optional keyword-based emoji injection at runtime (toggle per widget)
 - **Tap to copy** — Tap the quote to copy it to your clipboard; widget shows a random copy-success message for 2 seconds
@@ -70,7 +71,7 @@ The same quote looks slightly different every time. Can be toggled off per widge
 |--------|--------------|-------------|--------|
 | quotd | 4×1 | One configurable widget for every category | ✅ Available |
 
-> The widget starts at 4×1, can grow to any width your launcher supports, and switches to the expanded 4×2 layout when resized to two or more rows. Larger heights reuse the expanded layout. All 9 categories are available during configuration.
+> The widget starts at 4×1, can grow to any width your launcher supports, and switches to the expanded 4×2 layout when resized to two or more rows. Larger heights reuse the expanded layout. All 8 categories are available during configuration.
 
 ---
 
@@ -85,11 +86,12 @@ The same quote looks slightly different every time. Can be toggled off per widge
 5. Configure category and colors in the setup screen
 6. Tap **Apply**
 
-### Configuring Colors
+### Configuring Widgets
 
 When placing a widget, a configuration screen appears with:
-- **Category selector** — Pick any of the 9 quote modes
-- **Theme presets** — 8 curated color combinations
+- **Category selector** — Pick any of the 8 quote modes
+- **Theme presets** — Curated color combinations
+- **Typography options** — Pick a Font Size and Font Face (Sans Serif, Serif, Monospace)
 - Live preview of the widget with your chosen theme
 
 ### Multiple Widgets
@@ -119,9 +121,6 @@ Truths that hurt because they're accurate. Brutal honesty delivered fresh daily.
 
 ### 💌 Love
 Deeply romantic quotes for partners and hopeless romantics. The warm side of the pillow.
-
-### 🔥 Lust
-Flirty, intimate, and suggestive thoughts for partners. Handle with care.
 
 ### 🔮 Horoscope
 Sarcastic cosmic guidance from a universe that is mildly disappointed in humanity.

@@ -22,7 +22,6 @@ object QuoteRepository {
         "bad_advice" to "quotes/bad_advice.json",
         "emotional_damage" to "quotes/emotional_damage.json",
         "love" to "quotes/love.json",
-        "lust" to "quotes/lust.json",
         "horoscope" to "quotes/horoscope.json",
         "insults" to "quotes/insults.json",
         "office_excuses" to "quotes/office_excuses.json"

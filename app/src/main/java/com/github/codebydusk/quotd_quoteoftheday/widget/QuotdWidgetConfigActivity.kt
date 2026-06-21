@@ -55,27 +55,38 @@ class QuotdWidgetConfigActivity : ComponentActivity() {
             return
         }
 
-        val defaultCategory = WidgetPrefsManager.DEFAULT_CATEGORY
+        val defaultCategory = WidgetPrefsManager.getCategory(this, appWidgetId)
+        val defaultBgColor = WidgetPrefsManager.getBackgroundColor(this, appWidgetId)
+        val defaultFgColor = WidgetPrefsManager.getForegroundColor(this, appWidgetId)
+        val defaultEmojiEnabled = WidgetPrefsManager.isEmojiEnabled(this, appWidgetId)
+        val defaultFontSize = WidgetPrefsManager.getFontSize(this, appWidgetId)
+        val defaultFontFamily = WidgetPrefsManager.getFontFamily(this, appWidgetId)
 
         enableEdgeToEdge()
 
         setContent {
             WidgetConfigScreen(
                 defaultCategory = defaultCategory,
-                onApply = { category, bgColor, fgColor, emojiEnabled, fontSize ->
-                    applyConfiguration(category, bgColor, fgColor, emojiEnabled, fontSize)
+                defaultBgColor = defaultBgColor,
+                defaultFgColor = defaultFgColor,
+                defaultEmojiEnabled = defaultEmojiEnabled,
+                defaultFontSize = defaultFontSize,
+                defaultFontFamily = defaultFontFamily,
+                onApply = { category, bgColor, fgColor, emojiEnabled, fontSize, fontFamily ->
+                    applyConfiguration(category, bgColor, fgColor, emojiEnabled, fontSize, fontFamily)
                 },
                 onCancel = { finish() }
             )
         }
     }
 
-    private fun applyConfiguration(category: String, bgColor: Int, fgColor: Int, emojiEnabled: Boolean, fontSize: Float) {
+    private fun applyConfiguration(category: String, bgColor: Int, fgColor: Int, emojiEnabled: Boolean, fontSize: Float, fontFamily: String) {
         WidgetPrefsManager.setCategory(this, appWidgetId, category)
         WidgetPrefsManager.setBackgroundColor(this, appWidgetId, bgColor)
         WidgetPrefsManager.setForegroundColor(this, appWidgetId, fgColor)
         WidgetPrefsManager.setEmojiEnabled(this, appWidgetId, emojiEnabled)
         WidgetPrefsManager.setFontSize(this, appWidgetId, fontSize)
+        WidgetPrefsManager.setFontFamily(this, appWidgetId, fontFamily)
 
         // Trigger initial widget update
         val appWidgetManager = AppWidgetManager.getInstance(this)
@@ -94,7 +105,12 @@ class QuotdWidgetConfigActivity : ComponentActivity() {
 @Composable
 fun WidgetConfigScreen(
     defaultCategory: String,
-    onApply: (category: String, bgColor: Int, fgColor: Int, emojiEnabled: Boolean, fontSize: Float) -> Unit,
+    defaultBgColor: Int,
+    defaultFgColor: Int,
+    defaultEmojiEnabled: Boolean,
+    defaultFontSize: Float,
+    defaultFontFamily: String,
+    onApply: (category: String, bgColor: Int, fgColor: Int, emojiEnabled: Boolean, fontSize: Float, fontFamily: String) -> Unit,
     onCancel: () -> Unit
 ) {
     val categories = listOf(
@@ -103,20 +119,24 @@ fun WidgetConfigScreen(
         "bad_advice" to "💀 Bad Advice",
         "emotional_damage" to "💥 Emotional Damage",
         "love" to "💌 Love",
-        "lust" to "🔥 Lust",
         "horoscope" to "🔮 Horoscope",
         "insults" to "🎯 Funny Insults",
         "office_excuses" to "💼 Office Excuses"
     )
 
     var selectedCategory by remember { mutableStateOf(defaultCategory) }
-    var selectedPresetIndex by remember { mutableIntStateOf(0) }
-    var bgColor by remember { mutableIntStateOf(WidgetPrefsManager.DEFAULT_BG_COLOR) }
-    var fgColor by remember { mutableIntStateOf(WidgetPrefsManager.DEFAULT_FG_COLOR) }
-    var emojiEnabled by remember { mutableStateOf(true) }
+    var selectedPresetIndex by remember { 
+        mutableIntStateOf(WidgetPrefsManager.colorPresets.indexOfFirst { it.first == defaultBgColor && it.second == defaultFgColor }.coerceAtLeast(0))
+    }
+    var bgColor by remember { mutableIntStateOf(defaultBgColor) }
+    var fgColor by remember { mutableIntStateOf(defaultFgColor) }
+    var emojiEnabled by remember { mutableStateOf(defaultEmojiEnabled) }
     
-    val defaultFontSizeIndex = WidgetPrefsManager.fontSizes.indexOf(WidgetPrefsManager.DEFAULT_FONT_SIZE).takeIf { it >= 0 } ?: 2
+    val defaultFontSizeIndex = WidgetPrefsManager.fontSizes.indexOf(defaultFontSize).takeIf { it >= 0 } ?: 2
     var fontSizeIndex by remember { mutableFloatStateOf(defaultFontSizeIndex.toFloat()) }
+    
+    val defaultFontFamilyIndex = WidgetPrefsManager.fontFamilies.indexOf(defaultFontFamily).takeIf { it >= 0 } ?: 0
+    var fontFamilyIndex by remember { mutableIntStateOf(defaultFontFamilyIndex) }
 
     val bgDark = Color(0xFF0D0D0D)
     val surfaceColor = Color(0xFF1A1A1A)
@@ -287,14 +307,43 @@ fun WidgetConfigScreen(
                 }
             }
 
-            // ── Font Size ──
+            // ── Typography ──
             Text(
-                text = "FONT SIZE",
+                text = "TYPOGRAPHY",
                 fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = textSecondary,
                 letterSpacing = 1.5.sp
             )
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                WidgetPrefsManager.fontFamilyLabels.forEachIndexed { index, label ->
+                    val isSelected = fontFamilyIndex == index
+                    Surface(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(12.dp))
+                            .clickable { fontFamilyIndex = index },
+                        color = if (isSelected) Color(0xFF2A2A2A) else surfaceColor,
+                        shape = RoundedCornerShape(12.dp),
+                        border = if (isSelected) {
+                            androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF444444))
+                        } else null
+                    ) {
+                        Text(
+                            text = label,
+                            fontSize = 13.sp,
+                            color = if (isSelected) textPrimary else textSecondary,
+                            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
+                            modifier = Modifier.padding(vertical = 12.dp),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
 
             Surface(
                 modifier = Modifier
@@ -304,7 +353,7 @@ fun WidgetConfigScreen(
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Column(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
                 ) {
                     val steps = WidgetPrefsManager.fontSizes.size - 2
                     Slider(
@@ -322,7 +371,7 @@ fun WidgetConfigScreen(
                         text = WidgetPrefsManager.fontSizeLabels[fontSizeIndex.toInt()],
                         fontSize = 14.sp,
                         color = textSecondary,
-                        modifier = Modifier.align(Alignment.CenterHorizontally).offset(y = (-8).dp)
+                        modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 4.dp)
                     )
                 }
             }
@@ -353,7 +402,11 @@ fun WidgetConfigScreen(
                         text = "The stars have spoken. They'd like to remain anonymous.",
                         color = Color(fgColor),
                         fontSize = WidgetPrefsManager.fontSizes[fontSizeIndex.toInt()].sp,
-                        fontFamily = FontFamily.SansSerif,
+                        fontFamily = when (WidgetPrefsManager.fontFamilies[fontFamilyIndex]) {
+                            "serif" -> FontFamily.Serif
+                            "monospace" -> FontFamily.Monospace
+                            else -> FontFamily.SansSerif
+                        },
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.weight(1f),
                         maxLines = 2
@@ -387,7 +440,16 @@ fun WidgetConfigScreen(
                 }
 
                 Button(
-                    onClick = { onApply(selectedCategory, bgColor, fgColor, emojiEnabled, WidgetPrefsManager.fontSizes[fontSizeIndex.toInt()]) },
+                    onClick = { 
+                        onApply(
+                            selectedCategory, 
+                            bgColor, 
+                            fgColor, 
+                            emojiEnabled, 
+                            WidgetPrefsManager.fontSizes[fontSizeIndex.toInt()],
+                            WidgetPrefsManager.fontFamilies[fontFamilyIndex]
+                        ) 
+                    },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(

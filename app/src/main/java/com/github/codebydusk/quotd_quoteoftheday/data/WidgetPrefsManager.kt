@@ -17,12 +17,14 @@ object WidgetPrefsManager {
     private const val KEY_CURRENT_QUOTE = "current_quote_"
     private const val KEY_EMOJI_ENABLED = "emoji_enabled_"
     private const val KEY_FONT_SIZE = "font_size_"
+    private const val KEY_FONT_FAMILY = "font_family_"
 
     // Defaults
     const val DEFAULT_BG_COLOR = 0xFF1A1A1A.toInt()
     const val DEFAULT_FG_COLOR = 0xFFF5F5F5.toInt()
     const val DEFAULT_CATEGORY = "no"
     const val DEFAULT_FONT_SIZE = 16f
+    const val DEFAULT_FONT_FAMILY = "sans-serif"
 
     private fun prefs(context: Context) =
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -81,6 +83,15 @@ object WidgetPrefsManager {
         prefs(context).edit().putFloat(KEY_FONT_SIZE + appWidgetId, size).apply()
     }
 
+    // ── Font Family ───────────────────────────────────────────────────
+
+    fun getFontFamily(context: Context, appWidgetId: Int): String =
+        prefs(context).getString(KEY_FONT_FAMILY + appWidgetId, DEFAULT_FONT_FAMILY) ?: DEFAULT_FONT_FAMILY
+
+    fun setFontFamily(context: Context, appWidgetId: Int, family: String) {
+        prefs(context).edit().putString(KEY_FONT_FAMILY + appWidgetId, family).apply()
+    }
+
     // ── Cleanup ───────────────────────────────────────────────────────
 
     fun deletePrefs(context: Context, appWidgetId: Int) {
@@ -91,6 +102,7 @@ object WidgetPrefsManager {
             .remove(KEY_CURRENT_QUOTE + appWidgetId)
             .remove(KEY_EMOJI_ENABLED + appWidgetId)
             .remove(KEY_FONT_SIZE + appWidgetId)
+            .remove(KEY_FONT_FAMILY + appWidgetId)
             .apply()
     }
 
@@ -108,8 +120,11 @@ object WidgetPrefsManager {
         0xFF780000.toInt() to 0xFFFDF0D5.toInt(),  // Crimson / Parchment
     )
 
-    // ── Font Size Presets ─────────────────────────────────────────────
+    // ── Typography Presets ────────────────────────────────────────────
     
     val fontSizes = listOf(12f, 14f, 16f, 20f, 24f)
     val fontSizeLabels = listOf("Extra Small", "Small", "Normal", "Large", "Extra Large")
+
+    val fontFamilies = listOf("sans-serif", "serif", "monospace")
+    val fontFamilyLabels = listOf("Sans Serif", "Serif", "Monospace")
 }

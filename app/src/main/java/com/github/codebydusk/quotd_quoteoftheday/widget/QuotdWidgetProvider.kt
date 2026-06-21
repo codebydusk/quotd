@@ -77,6 +77,7 @@ class QuotdWidgetProvider : AppWidgetProvider() {
             val bgColor = WidgetPrefsManager.getBackgroundColor(context, appWidgetId)
             val fgColor = WidgetPrefsManager.getForegroundColor(context, appWidgetId)
             val fontSize = WidgetPrefsManager.getFontSize(context, appWidgetId)
+            val fontFamily = WidgetPrefsManager.getFontFamily(context, appWidgetId)
             val quote = QuoteRepository.getRandomQuote(context, category)
 
             // Apply emoji decoration if enabled for this widget
@@ -90,7 +91,7 @@ class QuotdWidgetProvider : AppWidgetProvider() {
             WidgetPrefsManager.setCurrentQuote(context, appWidgetId, displayText)
 
             val layoutId = getLayoutForWidget(context, appWidgetId)
-            val views = buildRemoteViews(context, appWidgetId, layoutId, displayText, bgColor, fgColor, fontSize)
+            val views = buildRemoteViews(context, appWidgetId, layoutId, displayText, bgColor, fgColor, fontSize, fontFamily)
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
 
@@ -104,9 +105,10 @@ class QuotdWidgetProvider : AppWidgetProvider() {
             val bgColor = WidgetPrefsManager.getBackgroundColor(context, appWidgetId)
             val fgColor = WidgetPrefsManager.getForegroundColor(context, appWidgetId)
             val fontSize = WidgetPrefsManager.getFontSize(context, appWidgetId)
+            val fontFamily = WidgetPrefsManager.getFontFamily(context, appWidgetId)
             
             val layoutId = getLayoutForWidget(context, appWidgetId)
-            val views = buildRemoteViews(context, appWidgetId, layoutId, displayText, bgColor, fgColor, fontSize)
+            val views = buildRemoteViews(context, appWidgetId, layoutId, displayText, bgColor, fgColor, fontSize, fontFamily)
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
 
@@ -120,12 +122,16 @@ class QuotdWidgetProvider : AppWidgetProvider() {
             text: String,
             bgColor: Int,
             fgColor: Int,
-            fontSize: Float
+            fontSize: Float,
+            fontFamily: String
         ): RemoteViews {
             val receiverClass = getReceiverClass(context, appWidgetId)
             val views = RemoteViews(context.packageName, layoutId)
 
-            views.setTextViewText(R.id.widget_text, text)
+            val spannableString = android.text.SpannableString(text)
+            spannableString.setSpan(android.text.style.TypefaceSpan(fontFamily), 0, text.length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            views.setTextViewText(R.id.widget_text, spannableString)
             views.setTextColor(R.id.widget_text, fgColor)
             views.setTextViewTextSize(R.id.widget_text, android.util.TypedValue.COMPLEX_UNIT_SP, fontSize)
             views.setInt(R.id.widget_root, "setBackgroundColor", bgColor)
@@ -255,9 +261,10 @@ class QuotdWidgetProvider : AppWidgetProvider() {
                 val fgColor = WidgetPrefsManager.getForegroundColor(context, appWidgetId)
                 val bgColor = WidgetPrefsManager.getBackgroundColor(context, appWidgetId)
                 val fontSize = WidgetPrefsManager.getFontSize(context, appWidgetId)
+                val fontFamily = WidgetPrefsManager.getFontFamily(context, appWidgetId)
                 val layoutId = getLayoutForWidget(context, appWidgetId)
                 val copyMessage = CopyMessageRepository.getRandomMessage(context)
-                val views = buildRemoteViews(context, appWidgetId, layoutId, copyMessage, bgColor, fgColor, fontSize)
+                val views = buildRemoteViews(context, appWidgetId, layoutId, copyMessage, bgColor, fgColor, fontSize, fontFamily)
                 val receiverClass = getReceiverClass(context, appWidgetId)
 
                 appWidgetManager.updateAppWidget(appWidgetId, views)
@@ -296,9 +303,10 @@ class QuotdWidgetProvider : AppWidgetProvider() {
                 val fgColor = WidgetPrefsManager.getForegroundColor(context, appWidgetId)
                 val bgColor = WidgetPrefsManager.getBackgroundColor(context, appWidgetId)
                 val fontSize = WidgetPrefsManager.getFontSize(context, appWidgetId)
+                val fontFamily = WidgetPrefsManager.getFontFamily(context, appWidgetId)
                 val layoutId = getLayoutForWidget(context, appWidgetId)
 
-                val views = buildRemoteViews(context, appWidgetId, layoutId, quote, bgColor, fgColor, fontSize)
+                val views = buildRemoteViews(context, appWidgetId, layoutId, quote, bgColor, fgColor, fontSize, fontFamily)
 
                 appWidgetManager.updateAppWidget(appWidgetId, views)
             }
