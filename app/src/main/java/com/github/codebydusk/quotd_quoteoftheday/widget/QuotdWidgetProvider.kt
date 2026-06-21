@@ -47,7 +47,7 @@ class QuotdWidgetProvider : AppWidgetProvider() {
                 .takeIf { it > 0 }
                 ?: manager.getAppWidgetInfo(appWidgetId)?.minHeight
                 ?: 0
-            return if (currentHeight > 60) {
+            return if (currentHeight >= 100) {
                 R.layout.widget_layout_4x2
             } else {
                 R.layout.widget_layout_4x1
