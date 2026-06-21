@@ -10,10 +10,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -56,8 +59,8 @@ class QuotdWidgetConfigActivity : ComponentActivity() {
         }
 
         val defaultCategory = WidgetPrefsManager.getCategory(this, appWidgetId)
-        val defaultBgColor = WidgetPrefsManager.getBackgroundColor(this, appWidgetId)
-        val defaultFgColor = WidgetPrefsManager.getForegroundColor(this, appWidgetId)
+        val defaultThemePresetId = WidgetPrefsManager.getThemePresetId(this, appWidgetId)
+        val defaultThemeMode = WidgetPrefsManager.getThemeMode(this, appWidgetId)
         val defaultEmojiEnabled = WidgetPrefsManager.isEmojiEnabled(this, appWidgetId)
         val defaultFontSize = WidgetPrefsManager.getFontSize(this, appWidgetId)
         val defaultFontFamily = WidgetPrefsManager.getFontFamily(this, appWidgetId)
@@ -67,23 +70,23 @@ class QuotdWidgetConfigActivity : ComponentActivity() {
         setContent {
             WidgetConfigScreen(
                 defaultCategory = defaultCategory,
-                defaultBgColor = defaultBgColor,
-                defaultFgColor = defaultFgColor,
+                defaultThemePresetId = defaultThemePresetId,
+                defaultThemeMode = defaultThemeMode,
                 defaultEmojiEnabled = defaultEmojiEnabled,
                 defaultFontSize = defaultFontSize,
                 defaultFontFamily = defaultFontFamily,
-                onApply = { category, bgColor, fgColor, emojiEnabled, fontSize, fontFamily ->
-                    applyConfiguration(category, bgColor, fgColor, emojiEnabled, fontSize, fontFamily)
+                onApply = { category, themePresetId, themeMode, emojiEnabled, fontSize, fontFamily ->
+                    applyConfiguration(category, themePresetId, themeMode, emojiEnabled, fontSize, fontFamily)
                 },
                 onCancel = { finish() }
             )
         }
     }
 
-    private fun applyConfiguration(category: String, bgColor: Int, fgColor: Int, emojiEnabled: Boolean, fontSize: Float, fontFamily: String) {
+    private fun applyConfiguration(category: String, themePresetId: String, themeMode: WidgetPrefsManager.ThemeMode, emojiEnabled: Boolean, fontSize: Float, fontFamily: String) {
         WidgetPrefsManager.setCategory(this, appWidgetId, category)
-        WidgetPrefsManager.setBackgroundColor(this, appWidgetId, bgColor)
-        WidgetPrefsManager.setForegroundColor(this, appWidgetId, fgColor)
+        WidgetPrefsManager.setThemePresetId(this, appWidgetId, themePresetId)
+        WidgetPrefsManager.setThemeMode(this, appWidgetId, themeMode)
         WidgetPrefsManager.setEmojiEnabled(this, appWidgetId, emojiEnabled)
         WidgetPrefsManager.setFontSize(this, appWidgetId, fontSize)
         WidgetPrefsManager.setFontFamily(this, appWidgetId, fontFamily)
@@ -105,12 +108,12 @@ class QuotdWidgetConfigActivity : ComponentActivity() {
 @Composable
 fun WidgetConfigScreen(
     defaultCategory: String,
-    defaultBgColor: Int,
-    defaultFgColor: Int,
+    defaultThemePresetId: String,
+    defaultThemeMode: WidgetPrefsManager.ThemeMode,
     defaultEmojiEnabled: Boolean,
     defaultFontSize: Float,
     defaultFontFamily: String,
-    onApply: (category: String, bgColor: Int, fgColor: Int, emojiEnabled: Boolean, fontSize: Float, fontFamily: String) -> Unit,
+    onApply: (category: String, themePresetId: String, themeMode: WidgetPrefsManager.ThemeMode, emojiEnabled: Boolean, fontSize: Float, fontFamily: String) -> Unit,
     onCancel: () -> Unit
 ) {
     val categories = listOf(
@@ -126,11 +129,20 @@ fun WidgetConfigScreen(
 
     var selectedCategory by remember { mutableStateOf(defaultCategory) }
     var selectedPresetIndex by remember { 
-        mutableIntStateOf(WidgetPrefsManager.colorPresets.indexOfFirst { it.first == defaultBgColor && it.second == defaultFgColor }.coerceAtLeast(0))
+        mutableIntStateOf(WidgetPrefsManager.themePresets.indexOfFirst { it.id == defaultThemePresetId }.coerceAtLeast(0))
     }
-    var bgColor by remember { mutableIntStateOf(defaultBgColor) }
-    var fgColor by remember { mutableIntStateOf(defaultFgColor) }
+    var selectedThemeMode by remember { mutableStateOf(defaultThemeMode) }
     var emojiEnabled by remember { mutableStateOf(defaultEmojiEnabled) }
+    
+    val isSystemDark = isSystemInDarkTheme()
+    val previewUseDark = when (selectedThemeMode) {
+        WidgetPrefsManager.ThemeMode.DARK -> true
+        WidgetPrefsManager.ThemeMode.LIGHT -> false
+        WidgetPrefsManager.ThemeMode.AUTO -> isSystemDark
+    }
+    val previewPreset = WidgetPrefsManager.themePresets[selectedPresetIndex]
+    val bgColor = if (previewUseDark) previewPreset.darkBg else previewPreset.lightBg
+    val fgColor = if (previewUseDark) previewPreset.darkFg else previewPreset.lightFg
     
     val defaultFontSizeIndex = WidgetPrefsManager.fontSizes.indexOf(defaultFontSize).takeIf { it >= 0 } ?: 2
     var fontSizeIndex by remember { mutableFloatStateOf(defaultFontSizeIndex.toFloat()) }
@@ -219,9 +231,9 @@ fun WidgetConfigScreen(
                 }
             }
 
-            // ── Color Presets ──
+            // ── Theme Mode ──
             Text(
-                text = "THEME",
+                text = "THEME MODE",
                 fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = textSecondary,
@@ -230,10 +242,53 @@ fun WidgetConfigScreen(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                val modes = listOf(WidgetPrefsManager.ThemeMode.AUTO, WidgetPrefsManager.ThemeMode.LIGHT, WidgetPrefsManager.ThemeMode.DARK)
+                val modeLabels = listOf("Auto", "Light", "Dark")
+                modes.forEachIndexed { index, mode ->
+                    val isSelected = selectedThemeMode == mode
+                    Surface(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(12.dp))
+                            .clickable { selectedThemeMode = mode },
+                        color = if (isSelected) Color(0xFF2A2A2A) else surfaceColor,
+                        shape = RoundedCornerShape(12.dp),
+                        border = if (isSelected) {
+                            androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF444444))
+                        } else null
+                    ) {
+                        Text(
+                            text = modeLabels[index],
+                            fontSize = 13.sp,
+                            color = if (isSelected) textPrimary else textSecondary,
+                            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
+                            modifier = Modifier.padding(vertical = 12.dp),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+
+            // ── Color Presets ──
+            Text(
+                text = "PRESET",
+                fontSize = 11.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = textSecondary,
+                letterSpacing = 1.5.sp
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                WidgetPrefsManager.colorPresets.forEachIndexed { index, (presetBg, presetFg) ->
+                WidgetPrefsManager.themePresets.forEachIndexed { index, preset ->
                     val isSelected = index == selectedPresetIndex
+                    val presetBg = if (previewUseDark) preset.darkBg else preset.lightBg
+                    val presetFg = if (previewUseDark) preset.darkFg else preset.lightFg
+
                     Box(
                         modifier = Modifier
                             .size(36.dp)
@@ -245,8 +300,6 @@ fun WidgetConfigScreen(
                             )
                             .clickable {
                                 selectedPresetIndex = index
-                                bgColor = presetBg
-                                fgColor = presetFg
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -443,8 +496,8 @@ fun WidgetConfigScreen(
                     onClick = { 
                         onApply(
                             selectedCategory, 
-                            bgColor, 
-                            fgColor, 
+                            WidgetPrefsManager.themePresets[selectedPresetIndex].id, 
+                            selectedThemeMode, 
                             emojiEnabled, 
                             WidgetPrefsManager.fontSizes[fontSizeIndex.toInt()],
                             WidgetPrefsManager.fontFamilies[fontFamilyIndex]

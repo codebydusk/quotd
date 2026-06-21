@@ -74,8 +74,9 @@ class QuotdWidgetProvider : AppWidgetProvider() {
          */
         fun updateWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
             val category = WidgetPrefsManager.getCategory(context, appWidgetId)
-            val bgColor = WidgetPrefsManager.getBackgroundColor(context, appWidgetId)
-            val fgColor = WidgetPrefsManager.getForegroundColor(context, appWidgetId)
+            val presetId = WidgetPrefsManager.getThemePresetId(context, appWidgetId)
+            val themeMode = WidgetPrefsManager.getThemeMode(context, appWidgetId)
+            val (bgColor, fgColor) = WidgetPrefsManager.resolveColors(context, presetId, themeMode)
             val fontSize = WidgetPrefsManager.getFontSize(context, appWidgetId)
             val fontFamily = WidgetPrefsManager.getFontFamily(context, appWidgetId)
             val quote = QuoteRepository.getRandomQuote(context, category)
@@ -102,8 +103,9 @@ class QuotdWidgetProvider : AppWidgetProvider() {
                     updateWidget(context, appWidgetManager, appWidgetId)
                     return
                 }
-            val bgColor = WidgetPrefsManager.getBackgroundColor(context, appWidgetId)
-            val fgColor = WidgetPrefsManager.getForegroundColor(context, appWidgetId)
+            val presetId = WidgetPrefsManager.getThemePresetId(context, appWidgetId)
+            val themeMode = WidgetPrefsManager.getThemeMode(context, appWidgetId)
+            val (bgColor, fgColor) = WidgetPrefsManager.resolveColors(context, presetId, themeMode)
             val fontSize = WidgetPrefsManager.getFontSize(context, appWidgetId)
             val fontFamily = WidgetPrefsManager.getFontFamily(context, appWidgetId)
             
@@ -258,8 +260,9 @@ class QuotdWidgetProvider : AppWidgetProvider() {
                 clipboard.setPrimaryClip(clip)
 
                 // Show a copy-success message in the widget
-                val fgColor = WidgetPrefsManager.getForegroundColor(context, appWidgetId)
-                val bgColor = WidgetPrefsManager.getBackgroundColor(context, appWidgetId)
+                val presetId = WidgetPrefsManager.getThemePresetId(context, appWidgetId)
+                val themeMode = WidgetPrefsManager.getThemeMode(context, appWidgetId)
+                val (bgColor, fgColor) = WidgetPrefsManager.resolveColors(context, presetId, themeMode)
                 val fontSize = WidgetPrefsManager.getFontSize(context, appWidgetId)
                 val fontFamily = WidgetPrefsManager.getFontFamily(context, appWidgetId)
                 val layoutId = getLayoutForWidget(context, appWidgetId)
@@ -300,8 +303,9 @@ class QuotdWidgetProvider : AppWidgetProvider() {
 
             ACTION_REVERT -> {
                 val quote = WidgetPrefsManager.getCurrentQuote(context, appWidgetId) ?: return
-                val fgColor = WidgetPrefsManager.getForegroundColor(context, appWidgetId)
-                val bgColor = WidgetPrefsManager.getBackgroundColor(context, appWidgetId)
+                val presetId = WidgetPrefsManager.getThemePresetId(context, appWidgetId)
+                val themeMode = WidgetPrefsManager.getThemeMode(context, appWidgetId)
+                val (bgColor, fgColor) = WidgetPrefsManager.resolveColors(context, presetId, themeMode)
                 val fontSize = WidgetPrefsManager.getFontSize(context, appWidgetId)
                 val fontFamily = WidgetPrefsManager.getFontFamily(context, appWidgetId)
                 val layoutId = getLayoutForWidget(context, appWidgetId)

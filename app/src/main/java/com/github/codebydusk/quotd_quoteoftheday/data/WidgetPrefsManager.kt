@@ -11,18 +11,28 @@ import android.graphics.Color
 object WidgetPrefsManager {
 
     private const val PREFS_NAME = "quotd_widget_prefs"
+    enum class ThemeMode { AUTO, LIGHT, DARK }
+
+    data class ThemePreset(
+        val id: String,
+        val lightBg: Int,
+        val lightFg: Int,
+        val darkBg: Int,
+        val darkFg: Int
+    )
+
     private const val KEY_CATEGORY = "category_"
-    private const val KEY_BG_COLOR = "bg_color_"
-    private const val KEY_FG_COLOR = "fg_color_"
+    private const val KEY_THEME_PRESET_ID = "theme_preset_id_"
+    private const val KEY_THEME_MODE = "theme_mode_"
     private const val KEY_CURRENT_QUOTE = "current_quote_"
     private const val KEY_EMOJI_ENABLED = "emoji_enabled_"
     private const val KEY_FONT_SIZE = "font_size_"
     private const val KEY_FONT_FAMILY = "font_family_"
 
     // Defaults
-    const val DEFAULT_BG_COLOR = 0xFF1A1A1A.toInt()
-    const val DEFAULT_FG_COLOR = 0xFFF5F5F5.toInt()
     const val DEFAULT_CATEGORY = "no"
+    const val DEFAULT_THEME_PRESET_ID = "default"
+    val DEFAULT_THEME_MODE = ThemeMode.AUTO.name
     const val DEFAULT_FONT_SIZE = 16f
     const val DEFAULT_FONT_FAMILY = "sans-serif"
 
@@ -38,22 +48,37 @@ object WidgetPrefsManager {
         prefs(context).edit().putString(KEY_CATEGORY + appWidgetId, category).apply()
     }
 
-    // ── Background Color ──────────────────────────────────────────────
+    // ── Theme Configuration ───────────────────────────────────────────
 
-    fun getBackgroundColor(context: Context, appWidgetId: Int): Int =
-        prefs(context).getInt(KEY_BG_COLOR + appWidgetId, DEFAULT_BG_COLOR)
+    fun getThemePresetId(context: Context, appWidgetId: Int): String =
+        prefs(context).getString(KEY_THEME_PRESET_ID + appWidgetId, DEFAULT_THEME_PRESET_ID) ?: DEFAULT_THEME_PRESET_ID
 
-    fun setBackgroundColor(context: Context, appWidgetId: Int, color: Int) {
-        prefs(context).edit().putInt(KEY_BG_COLOR + appWidgetId, color).apply()
+    fun setThemePresetId(context: Context, appWidgetId: Int, presetId: String) {
+        prefs(context).edit().putString(KEY_THEME_PRESET_ID + appWidgetId, presetId).apply()
     }
 
-    // ── Foreground (Text) Color ───────────────────────────────────────
+    fun getThemeMode(context: Context, appWidgetId: Int): ThemeMode {
+        val modeStr = prefs(context).getString(KEY_THEME_MODE + appWidgetId, DEFAULT_THEME_MODE) ?: DEFAULT_THEME_MODE
+        return try { ThemeMode.valueOf(modeStr) } catch (e: Exception) { ThemeMode.AUTO }
+    }
 
-    fun getForegroundColor(context: Context, appWidgetId: Int): Int =
-        prefs(context).getInt(KEY_FG_COLOR + appWidgetId, DEFAULT_FG_COLOR)
+    fun setThemeMode(context: Context, appWidgetId: Int, mode: ThemeMode) {
+        prefs(context).edit().putString(KEY_THEME_MODE + appWidgetId, mode.name).apply()
+    }
 
-    fun setForegroundColor(context: Context, appWidgetId: Int, color: Int) {
-        prefs(context).edit().putInt(KEY_FG_COLOR + appWidgetId, color).apply()
+    fun resolveColors(context: Context, presetId: String, mode: ThemeMode): Pair<Int, Int> {
+        val preset = themePresets.find { it.id == presetId } ?: themePresets.first()
+        val isSystemDark = (context.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
+        val useDark = when (mode) {
+            ThemeMode.DARK -> true
+            ThemeMode.LIGHT -> false
+            ThemeMode.AUTO -> isSystemDark
+        }
+        return if (useDark) {
+            preset.darkBg to preset.darkFg
+        } else {
+            preset.lightBg to preset.lightFg
+        }
     }
 
     // ── Current Quote (for copy/revert) ───────────────────────────────
@@ -97,8 +122,8 @@ object WidgetPrefsManager {
     fun deletePrefs(context: Context, appWidgetId: Int) {
         prefs(context).edit()
             .remove(KEY_CATEGORY + appWidgetId)
-            .remove(KEY_BG_COLOR + appWidgetId)
-            .remove(KEY_FG_COLOR + appWidgetId)
+            .remove(KEY_THEME_PRESET_ID + appWidgetId)
+            .remove(KEY_THEME_MODE + appWidgetId)
             .remove(KEY_CURRENT_QUOTE + appWidgetId)
             .remove(KEY_EMOJI_ENABLED + appWidgetId)
             .remove(KEY_FONT_SIZE + appWidgetId)
@@ -106,18 +131,17 @@ object WidgetPrefsManager {
             .apply()
     }
 
-    // ── Color Presets ─────────────────────────────────────────────────
+    // ── Theme Presets ─────────────────────────────────────────────────
 
-    /** Preset color pairs (background, foreground) for the config UI. */
-    val colorPresets: List<Pair<Int, Int>> = listOf(
-        0xFF1A1A1A.toInt() to 0xFFF5F5F5.toInt(),  // Dark / Light (default)
-        0xFFF5F5F5.toInt() to 0xFF1A1A1A.toInt(),  // Light / Dark
-        0xFF0D1B2A.toInt() to 0xFFE0E1DD.toInt(),  // Navy / Cream
-        0xFF1B4332.toInt() to 0xFFD8F3DC.toInt(),  // Forest / Mint
-        0xFF3C1642.toInt() to 0xFFF8E9A1.toInt(),  // Plum / Gold
-        0xFF2B2D42.toInt() to 0xFFEDF2F4.toInt(),  // Slate / Snow
-        0xFFFDF0D5.toInt() to 0xFF003049.toInt(),  // Parchment / Ink
-        0xFF780000.toInt() to 0xFFFDF0D5.toInt(),  // Crimson / Parchment
+    val themePresets: List<ThemePreset> = listOf(
+        ThemePreset("default", 0xFFF5F5F5.toInt(), 0xFF1A1A1A.toInt(), 0xFF1A1A1A.toInt(), 0xFFF5F5F5.toInt()),
+        ThemePreset("ubuntu", 0xFFFFFFFF.toInt(), 0xFFE95420.toInt(), 0xFF300A24.toInt(), 0xFFE95420.toInt()),
+        ThemePreset("nothing_os", 0xFFFDFBFF.toInt(), 0xFF1B1B1D.toInt(), 0xFF1B1B1D.toInt(), 0xFFD71921.toInt()),
+        ThemePreset("oled_lime", 0xFF000000.toInt(), 0xFFCAFE48.toInt(), 0xFF000000.toInt(), 0xFFCAFE48.toInt()),
+        ThemePreset("navy", 0xFFE0E1DD.toInt(), 0xFF0D1B2A.toInt(), 0xFF0D1B2A.toInt(), 0xFFE0E1DD.toInt()),
+        ThemePreset("forest", 0xFFD8F3DC.toInt(), 0xFF1B4332.toInt(), 0xFF1B4332.toInt(), 0xFFD8F3DC.toInt()),
+        ThemePreset("plum", 0xFFF8E9A1.toInt(), 0xFF3C1642.toInt(), 0xFF3C1642.toInt(), 0xFFF8E9A1.toInt()),
+        ThemePreset("crimson", 0xFFFDF0D5.toInt(), 0xFF780000.toInt(), 0xFF780000.toInt(), 0xFFFDF0D5.toInt())
     )
 
     // ── Typography Presets ────────────────────────────────────────────
