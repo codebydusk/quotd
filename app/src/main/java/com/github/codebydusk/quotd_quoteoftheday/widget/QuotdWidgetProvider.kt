@@ -17,15 +17,8 @@ import com.github.codebydusk.quotd_quoteoftheday.data.QuoteRepository
 import com.github.codebydusk.quotd_quoteoftheday.data.WidgetPrefsManager
 import com.github.codebydusk.quotd_quoteoftheday.emoji.KeywordEmojiDecorator
 
-/**
- * Unified AppWidgetProvider handling all widget variants (No/Horoscope × 4×1/4×2).
- * The widget type is determined per-instance via SharedPreferences set during configuration.
- *
- * Subclasses [QuotdWidgetProviderNo4x2], [QuotdWidgetProviderHoroscope4x1],
- * [QuotdWidgetProviderHoroscope4x2] exist only to give Android unique receiver names
- * for the launcher widget picker.
- */
-open class QuotdWidgetProvider : AppWidgetProvider() {
+/** A single, configurable AppWidgetProvider with compact and expanded layouts. */
+class QuotdWidgetProvider : AppWidgetProvider() {
 
     companion object {
         const val ACTION_REFRESH = "com.github.codebydusk.quotd_quoteoftheday.ACTION_REFRESH"
@@ -41,22 +34,20 @@ open class QuotdWidgetProvider : AppWidgetProvider() {
         /** Shared emoji decorator instance (stateless, thread-safe). */
         private val emojiDecorator = KeywordEmojiDecorator()
 
-        /** All receiver classes that need auto-refresh. */
-        val ALL_RECEIVER_CLASSES: List<Class<out QuotdWidgetProvider>> = listOf(
-            QuotdWidgetProvider::class.java,
-            QuotdWidgetProviderNo4x2::class.java,
-            QuotdWidgetProviderHoroscope4x1::class.java,
-            QuotdWidgetProviderHoroscope4x2::class.java
-        )
+        private val receiverClass = QuotdWidgetProvider::class.java
 
         /**
-         * Determines the layout resource based on the widget's minHeight.
-         * Widgets with minHeight > 60dp get the 4×2 layout.
+         * Determines the layout resource from the widget's current resize options.
+         * Widgets taller than 60dp use the expanded layout.
          */
         fun getLayoutForWidget(context: Context, appWidgetId: Int): Int {
             val manager = AppWidgetManager.getInstance(context)
-            val info = manager.getAppWidgetInfo(appWidgetId)
-            return if (info != null && info.minHeight > 60) {
+            val currentHeight = manager.getAppWidgetOptions(appWidgetId)
+                .getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
+                .takeIf { it > 0 }
+                ?: manager.getAppWidgetInfo(appWidgetId)?.minHeight
+                ?: 0
+            return if (currentHeight > 60) {
                 R.layout.widget_layout_4x2
             } else {
                 R.layout.widget_layout_4x1
@@ -97,6 +88,25 @@ open class QuotdWidgetProvider : AppWidgetProvider() {
                 quote
             }
 
+            val layoutId = getLayoutForWidget(context, appWidgetId)
+            val views = buildRemoteViews(context, appWidgetId, layoutId, displayText, bgColor, fgColor)
+            appWidgetManager.updateAppWidget(appWidgetId, views)
+        }
+
+        /** Rebuilds a widget after resizing without replacing its current quote. */
+        fun updateWidgetLayout(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
+            val quote = WidgetPrefsManager.getCurrentQuote(context, appWidgetId)
+                ?: run {
+                    updateWidget(context, appWidgetManager, appWidgetId)
+                    return
+                }
+            val bgColor = WidgetPrefsManager.getBackgroundColor(context, appWidgetId)
+            val fgColor = WidgetPrefsManager.getForegroundColor(context, appWidgetId)
+            val displayText = if (WidgetPrefsManager.isEmojiEnabled(context, appWidgetId)) {
+                emojiDecorator.decorate(quote)
+            } else {
+                quote
+            }
             val layoutId = getLayoutForWidget(context, appWidgetId)
             val views = buildRemoteViews(context, appWidgetId, layoutId, displayText, bgColor, fgColor)
             appWidgetManager.updateAppWidget(appWidgetId, views)
@@ -151,25 +161,23 @@ open class QuotdWidgetProvider : AppWidgetProvider() {
         }
 
         /**
-         * Schedules auto-refresh for all widget receiver classes.
+         * Schedules auto-refresh for the generic widget provider.
          */
         fun scheduleAutoRefresh(context: Context) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            for (receiverClass in ALL_RECEIVER_CLASSES) {
-                val intent = Intent(context, receiverClass).apply {
-                    action = ACTION_AUTO_REFRESH
-                }
-                val pending = PendingIntent.getBroadcast(
-                    context, receiverClass.hashCode(), intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
-                alarmManager.setRepeating(
-                    AlarmManager.ELAPSED_REALTIME,
-                    SystemClock.elapsedRealtime() + REFRESH_INTERVAL_MS,
-                    REFRESH_INTERVAL_MS,
-                    pending
-                )
+            val intent = Intent(context, receiverClass).apply {
+                action = ACTION_AUTO_REFRESH
             }
+            val pending = PendingIntent.getBroadcast(
+                context, receiverClass.hashCode(), intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+            alarmManager.setRepeating(
+                AlarmManager.ELAPSED_REALTIME,
+                SystemClock.elapsedRealtime() + REFRESH_INTERVAL_MS,
+                REFRESH_INTERVAL_MS,
+                pending
+            )
         }
 
         /**
@@ -177,16 +185,14 @@ open class QuotdWidgetProvider : AppWidgetProvider() {
          */
         fun cancelAutoRefresh(context: Context) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            for (receiverClass in ALL_RECEIVER_CLASSES) {
-                val intent = Intent(context, receiverClass).apply {
-                    action = ACTION_AUTO_REFRESH
-                }
-                val pending = PendingIntent.getBroadcast(
-                    context, receiverClass.hashCode(), intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
-                alarmManager.cancel(pending)
+            val intent = Intent(context, receiverClass).apply {
+                action = ACTION_AUTO_REFRESH
             }
+            val pending = PendingIntent.getBroadcast(
+                context, receiverClass.hashCode(), intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+            alarmManager.cancel(pending)
         }
     }
 
@@ -198,6 +204,16 @@ open class QuotdWidgetProvider : AppWidgetProvider() {
         for (appWidgetId in appWidgetIds) {
             updateWidget(context, appWidgetManager, appWidgetId)
         }
+    }
+
+    override fun onAppWidgetOptionsChanged(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetId: Int,
+        newOptions: android.os.Bundle
+    ) {
+        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
+        updateWidgetLayout(context, appWidgetManager, appWidgetId)
     }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -296,10 +312,7 @@ open class QuotdWidgetProvider : AppWidgetProvider() {
         super.onDisabled(context)
         // Only cancel if NO widgets of any type remain
         val manager = AppWidgetManager.getInstance(context)
-        val anyWidgets = ALL_RECEIVER_CLASSES.any { cls ->
-            manager.getAppWidgetIds(ComponentName(context, cls)).isNotEmpty()
-        }
-        if (!anyWidgets) {
+        if (manager.getAppWidgetIds(ComponentName(context, receiverClass)).isEmpty()) {
             cancelAutoRefresh(context)
         }
     }

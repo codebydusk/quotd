@@ -24,7 +24,8 @@ object QuoteRepository {
         "love" to "love.json",
         "lust" to "lust.json",
         "horoscope" to "horoscope.json",
-        "insults" to "insults.json"
+        "insults" to "insults.json",
+        "office_excuses" to "office_excuses.json"
     )
 
     /**

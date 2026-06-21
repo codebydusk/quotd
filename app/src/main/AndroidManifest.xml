@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
@@ -14,7 +13,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuotdQuoteOfTheDay">
 
-        <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -27,66 +25,22 @@
             </intent-filter>
         </activity>
 
-        <!-- Widget Configuration Activity -->
         <activity
             android:name=".widget.QuotdWidgetConfigActivity"
             android:exported="true"
             android:theme="@style/Theme.QuotdQuoteOfTheDay" />
 
-        <!-- ═══════════════════════════════════════════════════════════
-             Widget Receivers — one per variant (category × size)
-             ═══════════════════════════════════════════════════════════ -->
-
-        <!-- quotd · No (4×1) -->
+        <!-- One generic, resizable home-screen widget. -->
         <receiver
             android:name=".widget.QuotdWidgetProvider"
             android:exported="true"
-            android:label="@string/widget_name_no_4x1">
+            android:label="@string/widget_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/widget_info_no_4x1" />
-        </receiver>
-
-        <!-- quotd · No (4×2) -->
-        <receiver
-            android:name=".widget.QuotdWidgetProviderNo4x2"
-            android:exported="true"
-            android:label="@string/widget_name_no_4x2">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/widget_info_no_4x2" />
-        </receiver>
-
-        <!-- quotd · Horoscope (4×1) -->
-        <receiver
-            android:name=".widget.QuotdWidgetProviderHoroscope4x1"
-            android:exported="true"
-            android:label="@string/widget_name_horoscope_4x1">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/widget_info_horoscope_4x1" />
-        </receiver>
-
-        <!-- quotd · Horoscope (4×2) -->
-        <receiver
-            android:name=".widget.QuotdWidgetProviderHoroscope4x2"
-            android:exported="true"
-            android:label="@string/widget_name_horoscope_4x2">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/widget_info_horoscope_4x2" />
+                android:resource="@xml/widget_info" />
         </receiver>
 
     </application>

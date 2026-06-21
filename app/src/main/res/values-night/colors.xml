@@ -6,8 +6,8 @@
     <color name="ic_launcher_card">#F5F5F5</color>
     <color name="ic_launcher_ink">#171717</color>
     <color name="ic_launcher_muted">#6D6D6D</color>
-    <color name="ic_launcher_accent">#B7FF3C</color>
-    <color name="ic_launcher_accent_dim">#22B7FF3C</color>
+    <color name="ic_launcher_accent">#4169E1</color>
+    <color name="ic_launcher_accent_dim">#224169E1</color>
     <color name="ic_launcher_shadow">#66000000</color>
     <color name="ic_launcher_fg">#F5F5F5</color>
     <color name="ic_launcher_fg_alpha">#80F5F5F5</color>

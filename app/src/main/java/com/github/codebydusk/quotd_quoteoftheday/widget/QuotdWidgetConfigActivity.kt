@@ -55,8 +55,7 @@ class QuotdWidgetConfigActivity : ComponentActivity() {
             return
         }
 
-        // Determine default category from the widget provider metadata
-        val defaultCategory = determineDefaultCategory()
+        val defaultCategory = WidgetPrefsManager.DEFAULT_CATEGORY
 
         enableEdgeToEdge()
 
@@ -68,18 +67,6 @@ class QuotdWidgetConfigActivity : ComponentActivity() {
                 },
                 onCancel = { finish() }
             )
-        }
-    }
-
-    /**
-     * Infers the default category from which widget the user selected in the picker.
-     */
-    private fun determineDefaultCategory(): String {
-        val info = AppWidgetManager.getInstance(this).getAppWidgetInfo(appWidgetId)
-        val label = info?.loadLabel(packageManager)?.lowercase() ?: ""
-        return when {
-            "horoscope" in label -> "horoscope"
-            else -> "no"
         }
     }
 
@@ -117,7 +104,8 @@ fun WidgetConfigScreen(
         "love" to "💌 Love",
         "lust" to "🔥 Lust",
         "horoscope" to "🔮 Horoscope",
-        "insults" to "🎯 Funny Insults"
+        "insults" to "🎯 Funny Insults",
+        "office_excuses" to "💼 Office Excuses"
     )
 
     var selectedCategory by remember { mutableStateOf(defaultCategory) }

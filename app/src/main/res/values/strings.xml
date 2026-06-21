@@ -1,11 +1,7 @@
 <resources>
     <string name="app_name">quotd - Quote Of The Day</string>
-    <string name="widget_name_no_4x1">quotd · No (4×1)</string>
-    <string name="widget_name_no_4x2">quotd · No (4×2)</string>
-    <string name="widget_name_horoscope_4x1">quotd · Horoscope (4×1)</string>
-    <string name="widget_name_horoscope_4x2">quotd · Horoscope (4×2)</string>
-    <string name="widget_desc_no">Creative ways to say no — refreshed hourly</string>
-    <string name="widget_desc_horoscope">Sarcastic horoscopes — refreshed hourly</string>
+    <string name="widget_name">quotd</string>
+    <string name="widget_desc">Quotes, chaos, and excuses - resizable</string>
     <string name="refresh">Refresh</string>
     <string name="configure_widget">Configure Widget</string>
     <string name="apply">Apply</string>
@@ -21,4 +17,5 @@
     <string name="category_lust">Lust</string>
     <string name="category_horoscope">Horoscope</string>
     <string name="category_insults">Funny Insults</string>
+    <string name="category_office_excuses">Office Excuses</string>
 </resources>

@@ -21,8 +21,8 @@ No accounts. No internet. No tracking. Just words.
 
 ## Features
 
-- **8 quote categories** — No, Chaos, Bad Advice, Emotional Damage, Love, Lust, Horoscope, Funny Insults
-- **Two widget sizes** — 4×1 (compact) and 4×2 (expanded)
+- **9 quote categories** — No, Chaos, Bad Advice, Emotional Damage, Love, Lust, Horoscope, Funny Insults, Office Excuses
+- **Resizable layouts** — Starts at 4×1 and expands to 4×2
 - **Per-widget color customisation** — Each widget instance has its own background and text color
 - **Dynamic emoji augmentation** — Optional keyword-based emoji injection at runtime (toggle per widget)
 - **Tap to copy** — Tap the quote to copy it to your clipboard; widget shows a random copy-success message for 2 seconds
@@ -66,14 +66,11 @@ The same quote looks slightly different every time. Can be toggled off per widge
 
 ## Widget Types
 
-| Widget | Size | Description | Status |
-|--------|------|-------------|--------|
-| quotd · No | 4×1 | Creative ways to say no | ✅ Available |
-| quotd · No | 4×2 | Creative ways to say no (expanded) | ✅ Available |
-| quotd · Horoscope | 4×1 | Sarcastic cosmic wisdom | ✅ Available |
-| quotd · Horoscope | 4×2 | Sarcastic cosmic wisdom (expanded) | ✅ Available |
+| Widget | Initial size | Description | Status |
+|--------|--------------|-------------|--------|
+| quotd | 4×1 | One configurable widget for every category | ✅ Available |
 
-> All 8 categories are available within any widget via the configuration screen. The launcher picker shows No and Horoscope as quick-access presets.
+> The widget starts at 4×1, can grow to any width your launcher supports, and switches to the expanded 4×2 layout when resized to two or more rows. Larger heights reuse the expanded layout. All 9 categories are available during configuration.
 
 ---
 
@@ -84,14 +81,14 @@ The same quote looks slightly different every time. Can be toggled off per widge
 1. Long-press on your home screen
 2. Select **Widgets**
 3. Find **quotd** in the widget list
-4. Choose your preferred size (4×1 or 4×2) and preset (No or Horoscope)
+4. Add the 4×1 widget, then resize it from your launcher if you want more space
 5. Configure category and colors in the setup screen
 6. Tap **Apply**
 
 ### Configuring Colors
 
 When placing a widget, a configuration screen appears with:
-- **Category selector** — Pick any of the 8 quote modes
+- **Category selector** — Pick any of the 9 quote modes
 - **Theme presets** — 8 curated color combinations
 - Live preview of the widget with your chosen theme
 
@@ -131,6 +128,9 @@ Sarcastic cosmic guidance from a universe that is mildly disappointed in humanit
 
 ### 🎯 Funny Insults
 Playful roasts, sarcastic burns, and harmless emotional violence. Send to friends at your own risk.
+
+### 💼 Office Excuses
+Professionally unprofessional reasons to skip meetings, avoid spreadsheets, and preserve workplace morale from a safe distance.
 
 ---
 
