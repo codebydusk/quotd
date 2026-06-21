@@ -15,6 +15,7 @@ object WidgetPrefsManager {
 
     data class ThemePreset(
         val id: String,
+        val name: String,
         val lightBg: Int,
         val lightFg: Int,
         val darkBg: Int,
@@ -74,6 +75,12 @@ object WidgetPrefsManager {
             ThemeMode.LIGHT -> false
             ThemeMode.AUTO -> isSystemDark
         }
+        if (preset.id == "default" && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            val bgRes = if (useDark) android.R.color.system_neutral1_900 else android.R.color.system_neutral1_50
+            val fgRes = if (useDark) android.R.color.system_neutral1_50 else android.R.color.system_neutral1_900
+            return androidx.core.content.ContextCompat.getColor(context, bgRes) to androidx.core.content.ContextCompat.getColor(context, fgRes)
+        }
+
         return if (useDark) {
             preset.darkBg to preset.darkFg
         } else {
@@ -134,14 +141,14 @@ object WidgetPrefsManager {
     // ── Theme Presets ─────────────────────────────────────────────────
 
     val themePresets: List<ThemePreset> = listOf(
-        ThemePreset("default", 0xFFF5F5F5.toInt(), 0xFF1A1A1A.toInt(), 0xFF1A1A1A.toInt(), 0xFFF5F5F5.toInt()),
-        ThemePreset("ubuntu", 0xFFFFFFFF.toInt(), 0xFFE95420.toInt(), 0xFF300A24.toInt(), 0xFFE95420.toInt()),
-        ThemePreset("nothing_os", 0xFFFDFBFF.toInt(), 0xFF1B1B1D.toInt(), 0xFF1B1B1D.toInt(), 0xFFD71921.toInt()),
-        ThemePreset("oled_lime", 0xFF000000.toInt(), 0xFFCAFE48.toInt(), 0xFF000000.toInt(), 0xFFCAFE48.toInt()),
-        ThemePreset("navy", 0xFFE0E1DD.toInt(), 0xFF0D1B2A.toInt(), 0xFF0D1B2A.toInt(), 0xFFE0E1DD.toInt()),
-        ThemePreset("forest", 0xFFD8F3DC.toInt(), 0xFF1B4332.toInt(), 0xFF1B4332.toInt(), 0xFFD8F3DC.toInt()),
-        ThemePreset("plum", 0xFFF8E9A1.toInt(), 0xFF3C1642.toInt(), 0xFF3C1642.toInt(), 0xFFF8E9A1.toInt()),
-        ThemePreset("crimson", 0xFFFDF0D5.toInt(), 0xFF780000.toInt(), 0xFF780000.toInt(), 0xFFFDF0D5.toInt())
+        ThemePreset("default", "Default", 0xFFF5F5F5.toInt(), 0xFF1A1A1A.toInt(), 0xFF1A1A1A.toInt(), 0xFFF5F5F5.toInt()),
+        ThemePreset("ubuntu", "Ubuntu", 0xFFFFFFFF.toInt(), 0xFFE95420.toInt(), 0xFF300A24.toInt(), 0xFFE95420.toInt()),
+        ThemePreset("nothing_os", "Nothing OS", 0xFFFDFBFF.toInt(), 0xFFD71921.toInt(), 0xFF1B1B1D.toInt(), 0xFFD71921.toInt()),
+        ThemePreset("oled_lime", "OLED Lime", 0xFF000000.toInt(), 0xFFCAFE48.toInt(), 0xFF000000.toInt(), 0xFFCAFE48.toInt()),
+        ThemePreset("navy", "Navy", 0xFFE0E1DD.toInt(), 0xFF0D1B2A.toInt(), 0xFF0D1B2A.toInt(), 0xFFE0E1DD.toInt()),
+        ThemePreset("forest", "Forest", 0xFFD8F3DC.toInt(), 0xFF1B4332.toInt(), 0xFF1B4332.toInt(), 0xFFD8F3DC.toInt()),
+        ThemePreset("plum", "Plum", 0xFFF8E9A1.toInt(), 0xFF3C1642.toInt(), 0xFF3C1642.toInt(), 0xFFF8E9A1.toInt()),
+        ThemePreset("crimson", "Crimson", 0xFFFDF0D5.toInt(), 0xFF780000.toInt(), 0xFF780000.toInt(), 0xFFFDF0D5.toInt())
     )
 
     // ── Typography Presets ────────────────────────────────────────────

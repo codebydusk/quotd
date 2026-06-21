@@ -44,8 +44,9 @@ class QuotdWidgetConfigActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Default result is CANCELED — if user backs out, widget won't be placed
-        setResult(RESULT_CANCELED)
+        // Initialize the intent properly in case user backs out
+        val cancelResult = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+        setResult(RESULT_CANCELED, cancelResult)
 
         // Get the widget ID from the intent
         appWidgetId = intent?.extras?.getInt(
@@ -57,6 +58,10 @@ class QuotdWidgetConfigActivity : ComponentActivity() {
             finish()
             return
         }
+
+        // Set RESULT_OK so if the user backs out, the widget is added with current state
+        val okResult = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+        setResult(RESULT_OK, okResult)
 
         val defaultCategory = WidgetPrefsManager.getCategory(this, appWidgetId)
         val defaultThemePresetId = WidgetPrefsManager.getThemePresetId(this, appWidgetId)
@@ -75,10 +80,9 @@ class QuotdWidgetConfigActivity : ComponentActivity() {
                 defaultEmojiEnabled = defaultEmojiEnabled,
                 defaultFontSize = defaultFontSize,
                 defaultFontFamily = defaultFontFamily,
-                onApply = { category, themePresetId, themeMode, emojiEnabled, fontSize, fontFamily ->
+                onStateChanged = { category, themePresetId, themeMode, emojiEnabled, fontSize, fontFamily ->
                     applyConfiguration(category, themePresetId, themeMode, emojiEnabled, fontSize, fontFamily)
-                },
-                onCancel = { finish() }
+                }
             )
         }
     }
@@ -94,11 +98,6 @@ class QuotdWidgetConfigActivity : ComponentActivity() {
         // Trigger initial widget update
         val appWidgetManager = AppWidgetManager.getInstance(this)
         QuotdWidgetProvider.updateWidget(this, appWidgetManager, appWidgetId)
-
-        // Return success
-        val resultValue = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-        setResult(RESULT_OK, resultValue)
-        finish()
     }
 }
 
@@ -113,8 +112,7 @@ fun WidgetConfigScreen(
     defaultEmojiEnabled: Boolean,
     defaultFontSize: Float,
     defaultFontFamily: String,
-    onApply: (category: String, themePresetId: String, themeMode: WidgetPrefsManager.ThemeMode, emojiEnabled: Boolean, fontSize: Float, fontFamily: String) -> Unit,
-    onCancel: () -> Unit
+    onStateChanged: (category: String, themePresetId: String, themeMode: WidgetPrefsManager.ThemeMode, emojiEnabled: Boolean, fontSize: Float, fontFamily: String) -> Unit
 ) {
     val categories = listOf(
         "no" to "🚫 No",
@@ -149,6 +147,17 @@ fun WidgetConfigScreen(
     
     val defaultFontFamilyIndex = WidgetPrefsManager.fontFamilies.indexOf(defaultFontFamily).takeIf { it >= 0 } ?: 0
     var fontFamilyIndex by remember { mutableIntStateOf(defaultFontFamilyIndex) }
+
+    LaunchedEffect(selectedCategory, selectedPresetIndex, selectedThemeMode, emojiEnabled, fontSizeIndex, fontFamilyIndex) {
+        onStateChanged(
+            selectedCategory,
+            WidgetPrefsManager.themePresets[selectedPresetIndex].id,
+            selectedThemeMode,
+            emojiEnabled,
+            WidgetPrefsManager.fontSizes[fontSizeIndex.toInt()],
+            WidgetPrefsManager.fontFamilies[fontFamilyIndex]
+        )
+    }
 
     val bgDark = Color(0xFF0D0D0D)
     val surfaceColor = Color(0xFF1A1A1A)
@@ -273,7 +282,7 @@ fun WidgetConfigScreen(
 
             // ── Color Presets ──
             Text(
-                text = "PRESET",
+                text = "PRESET - ${WidgetPrefsManager.themePresets[selectedPresetIndex].name.uppercase()}",
                 fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = textSecondary,
@@ -474,49 +483,7 @@ fun WidgetConfigScreen(
             }
 
             Spacer(modifier = Modifier.weight(1f))
-
-            // ── Action Buttons ──
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                OutlinedButton(
-                    onClick = onCancel,
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = textSecondary
-                    ),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF333333))
-                ) {
-                    Text("Cancel", fontSize = 15.sp)
-                }
-
-                Button(
-                    onClick = { 
-                        onApply(
-                            selectedCategory, 
-                            WidgetPrefsManager.themePresets[selectedPresetIndex].id, 
-                            selectedThemeMode, 
-                            emojiEnabled, 
-                            WidgetPrefsManager.fontSizes[fontSizeIndex.toInt()],
-                            WidgetPrefsManager.fontFamilies[fontFamilyIndex]
-                        ) 
-                    },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = textPrimary,
-                        contentColor = bgDark
-                    )
-                ) {
-                    Text(
-                        "Apply",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-            }
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
