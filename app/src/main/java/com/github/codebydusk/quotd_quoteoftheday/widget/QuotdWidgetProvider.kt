@@ -78,15 +78,15 @@ class QuotdWidgetProvider : AppWidgetProvider() {
             val fgColor = WidgetPrefsManager.getForegroundColor(context, appWidgetId)
             val quote = QuoteRepository.getRandomQuote(context, category)
 
-            // Store the original (emoji-free) quote for clipboard copy
-            WidgetPrefsManager.setCurrentQuote(context, appWidgetId, quote)
-
             // Apply emoji decoration if enabled for this widget
             val displayText = if (WidgetPrefsManager.isEmojiEnabled(context, appWidgetId)) {
                 emojiDecorator.decorate(quote)
             } else {
                 quote
             }
+
+            // Store the finalized (decorated) quote for clipboard copy and layout resize
+            WidgetPrefsManager.setCurrentQuote(context, appWidgetId, displayText)
 
             val layoutId = getLayoutForWidget(context, appWidgetId)
             val views = buildRemoteViews(context, appWidgetId, layoutId, displayText, bgColor, fgColor)
@@ -95,18 +95,14 @@ class QuotdWidgetProvider : AppWidgetProvider() {
 
         /** Rebuilds a widget after resizing without replacing its current quote. */
         fun updateWidgetLayout(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
-            val quote = WidgetPrefsManager.getCurrentQuote(context, appWidgetId)
+            val displayText = WidgetPrefsManager.getCurrentQuote(context, appWidgetId)
                 ?: run {
                     updateWidget(context, appWidgetManager, appWidgetId)
                     return
                 }
             val bgColor = WidgetPrefsManager.getBackgroundColor(context, appWidgetId)
             val fgColor = WidgetPrefsManager.getForegroundColor(context, appWidgetId)
-            val displayText = if (WidgetPrefsManager.isEmojiEnabled(context, appWidgetId)) {
-                emojiDecorator.decorate(quote)
-            } else {
-                quote
-            }
+            
             val layoutId = getLayoutForWidget(context, appWidgetId)
             val views = buildRemoteViews(context, appWidgetId, layoutId, displayText, bgColor, fgColor)
             appWidgetManager.updateAppWidget(appWidgetId, views)
