@@ -33,6 +33,7 @@ object WidgetPrefsManager {
     private const val KEY_FONT_SIZE = "font_size_"
     private const val KEY_FONT_FAMILY = "font_family_"
     private const val KEY_CORNER_SHAPE = "corner_shape_"
+    private const val KEY_REFRESH_INTERVAL = "refresh_interval_"
 
     // Defaults
     const val DEFAULT_CATEGORY = "no"
@@ -41,6 +42,7 @@ object WidgetPrefsManager {
     const val DEFAULT_FONT_SIZE = 16f
     const val DEFAULT_FONT_FAMILY = "sans-serif"
     val DEFAULT_CORNER_SHAPE = CornerShape.DEFAULT.name
+    const val DEFAULT_REFRESH_INTERVAL = 60 * 60 * 1000L // 1 hour
 
     private fun prefs(context: Context) =
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -145,6 +147,15 @@ object WidgetPrefsManager {
         prefs(context).edit().putString(KEY_CORNER_SHAPE + appWidgetId, shape.name).apply()
     }
 
+    // ── Auto Refresh ──────────────────────────────────────────────────
+
+    fun getRefreshInterval(context: Context, appWidgetId: Int): Long =
+        prefs(context).getLong(KEY_REFRESH_INTERVAL + appWidgetId, DEFAULT_REFRESH_INTERVAL)
+
+    fun setRefreshInterval(context: Context, appWidgetId: Int, intervalMs: Long) {
+        prefs(context).edit().putLong(KEY_REFRESH_INTERVAL + appWidgetId, intervalMs).apply()
+    }
+
     // ── Cleanup ───────────────────────────────────────────────────────
 
     fun deletePrefs(context: Context, appWidgetId: Int) {
@@ -157,6 +168,7 @@ object WidgetPrefsManager {
             .remove(KEY_FONT_SIZE + appWidgetId)
             .remove(KEY_FONT_FAMILY + appWidgetId)
             .remove(KEY_CORNER_SHAPE + appWidgetId)
+            .remove(KEY_REFRESH_INTERVAL + appWidgetId)
             .apply()
     }
 
@@ -180,4 +192,26 @@ object WidgetPrefsManager {
 
     val fontFamilies = listOf("sans-serif", "serif", "monospace")
     val fontFamilyLabels = listOf("Sans Serif", "Serif", "Monospace")
+
+    // ── Refresh Intervals ─────────────────────────────────────────────
+
+    val refreshIntervals = listOf(
+        60 * 1000L,              // 1 min
+        2 * 60 * 1000L,          // 2 mins
+        5 * 60 * 1000L,          // 5 mins
+        10 * 60 * 1000L,         // 10 mins
+        15 * 60 * 1000L,         // 15 mins
+        30 * 60 * 1000L,         // 30 mins
+        60 * 60 * 1000L,         // 1 hour
+        2 * 60 * 60 * 1000L,     // 2 hours
+        3 * 60 * 60 * 1000L,     // 3 hours
+        6 * 60 * 60 * 1000L,     // 6 hours
+        8 * 60 * 60 * 1000L,     // 8 hours
+        12 * 60 * 60 * 1000L,    // 12 hours
+        24 * 60 * 60 * 1000L     // 24 hours
+    )
+    val refreshIntervalLabels = listOf(
+        "1 min", "2 mins", "5 mins", "10 mins", "15 mins", "30 mins",
+        "1 hour", "2 hours", "3 hours", "6 hours", "8 hours", "12 hours", "24 hours"
+    )
 }

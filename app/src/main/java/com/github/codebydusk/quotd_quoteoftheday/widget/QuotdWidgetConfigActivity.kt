@@ -72,6 +72,7 @@ class QuotdWidgetConfigActivity : ComponentActivity() {
         val defaultFontSize = WidgetPrefsManager.getFontSize(this, appWidgetId)
         val defaultFontFamily = WidgetPrefsManager.getFontFamily(this, appWidgetId)
         val defaultCornerShape = WidgetPrefsManager.getCornerShape(this, appWidgetId)
+        val defaultRefreshInterval = WidgetPrefsManager.getRefreshInterval(this, appWidgetId)
 
         enableEdgeToEdge()
 
@@ -84,14 +85,15 @@ class QuotdWidgetConfigActivity : ComponentActivity() {
                 defaultFontSize = defaultFontSize,
                 defaultFontFamily = defaultFontFamily,
                 defaultCornerShape = defaultCornerShape,
-                onStateChanged = { category, themePresetId, themeMode, emojiEnabled, fontSize, fontFamily, cornerShape ->
-                    applyConfiguration(category, themePresetId, themeMode, emojiEnabled, fontSize, fontFamily, cornerShape)
+                defaultRefreshInterval = defaultRefreshInterval,
+                onStateChanged = { category, themePresetId, themeMode, emojiEnabled, fontSize, fontFamily, cornerShape, refreshInterval ->
+                    applyConfiguration(category, themePresetId, themeMode, emojiEnabled, fontSize, fontFamily, cornerShape, refreshInterval)
                 }
             )
         }
     }
 
-    private fun applyConfiguration(category: String, themePresetId: String, themeMode: WidgetPrefsManager.ThemeMode, emojiEnabled: Boolean, fontSize: Float, fontFamily: String, cornerShape: WidgetPrefsManager.CornerShape) {
+    private fun applyConfiguration(category: String, themePresetId: String, themeMode: WidgetPrefsManager.ThemeMode, emojiEnabled: Boolean, fontSize: Float, fontFamily: String, cornerShape: WidgetPrefsManager.CornerShape, refreshInterval: Long) {
         WidgetPrefsManager.setCategory(this, appWidgetId, category)
         WidgetPrefsManager.setThemePresetId(this, appWidgetId, themePresetId)
         WidgetPrefsManager.setThemeMode(this, appWidgetId, themeMode)
@@ -99,10 +101,12 @@ class QuotdWidgetConfigActivity : ComponentActivity() {
         WidgetPrefsManager.setFontSize(this, appWidgetId, fontSize)
         WidgetPrefsManager.setFontFamily(this, appWidgetId, fontFamily)
         WidgetPrefsManager.setCornerShape(this, appWidgetId, cornerShape)
+        WidgetPrefsManager.setRefreshInterval(this, appWidgetId, refreshInterval)
 
-        // Trigger initial widget update
+        // Trigger initial widget update and auto-refresh schedule
         val appWidgetManager = AppWidgetManager.getInstance(this)
         QuotdWidgetProvider.updateWidget(this, appWidgetManager, appWidgetId)
+        QuotdWidgetProvider.scheduleAutoRefresh(this, appWidgetId)
     }
 }
 
@@ -144,7 +148,8 @@ fun WidgetConfigScreen(
     defaultFontSize: Float,
     defaultFontFamily: String,
     defaultCornerShape: WidgetPrefsManager.CornerShape,
-    onStateChanged: (category: String, themePresetId: String, themeMode: WidgetPrefsManager.ThemeMode, emojiEnabled: Boolean, fontSize: Float, fontFamily: String, cornerShape: WidgetPrefsManager.CornerShape) -> Unit
+    defaultRefreshInterval: Long,
+    onStateChanged: (category: String, themePresetId: String, themeMode: WidgetPrefsManager.ThemeMode, emojiEnabled: Boolean, fontSize: Float, fontFamily: String, cornerShape: WidgetPrefsManager.CornerShape, refreshInterval: Long) -> Unit
 ) {
     val categories = listOf(
         "no" to "🚫 No",
@@ -183,7 +188,10 @@ fun WidgetConfigScreen(
 
     var selectedCornerShape by remember { mutableStateOf(defaultCornerShape) }
 
-    LaunchedEffect(selectedCategory, selectedPresetIndex, selectedThemeMode, emojiEnabled, fontSizeIndex, fontFamilyIndex, selectedCornerShape) {
+    val defaultRefreshIntervalIndex = WidgetPrefsManager.refreshIntervals.indexOf(defaultRefreshInterval).takeIf { it >= 0 } ?: 6
+    var refreshIntervalIndex by remember { mutableFloatStateOf(defaultRefreshIntervalIndex.toFloat()) }
+
+    LaunchedEffect(selectedCategory, selectedPresetIndex, selectedThemeMode, emojiEnabled, fontSizeIndex, fontFamilyIndex, selectedCornerShape, refreshIntervalIndex) {
         onStateChanged(
             selectedCategory,
             WidgetPrefsManager.themePresets[selectedPresetIndex].id,
@@ -191,7 +199,8 @@ fun WidgetConfigScreen(
             emojiEnabled,
             WidgetPrefsManager.fontSizes[fontSizeIndex.toInt()],
             WidgetPrefsManager.fontFamilies[fontFamilyIndex],
-            selectedCornerShape
+            selectedCornerShape,
+            WidgetPrefsManager.refreshIntervals[refreshIntervalIndex.toInt()]
         )
     }
 
@@ -492,6 +501,40 @@ fun WidgetConfigScreen(
                                 textAlign = TextAlign.Center
                             )
                         }
+                    }
+                }
+            }
+
+            // ── Auto-Refresh ──
+            SectionContainer(title = "AUTO-REFRESH INTERVAL") {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp)),
+                    color = surfaceColor,
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+                    ) {
+                        val steps = WidgetPrefsManager.refreshIntervals.size - 2
+                        Slider(
+                            value = refreshIntervalIndex,
+                            onValueChange = { refreshIntervalIndex = it },
+                            valueRange = 0f..(WidgetPrefsManager.refreshIntervals.size - 1).toFloat(),
+                            steps = steps,
+                            colors = SliderDefaults.colors(
+                                thumbColor = textPrimary,
+                                activeTrackColor = textPrimary,
+                                inactiveTrackColor = Color(0xFF333333)
+                            )
+                        )
+                        Text(
+                            text = WidgetPrefsManager.refreshIntervalLabels[refreshIntervalIndex.toInt()],
+                            fontSize = 14.sp,
+                            color = textSecondary,
+                            modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 4.dp)
+                        )
                     }
                 }
             }

@@ -30,7 +30,7 @@ No accounts. No internet. No tracking. Just words.
 - **Dynamic emoji augmentation** — Optional keyword-based emoji injection at runtime (toggle per widget)
 - **Tap to copy** — Tap the quote to copy it to your clipboard; widget shows a random copy-success message for 2 seconds
 - **Refresh button** — Manual refresh on the right side of the widget
-- **Auto-refresh** — Quotes rotate automatically every 1 hour
+- **Auto-refresh** — Configure interval per widget (1 min up to 24 hours)
 - **Offline-first** — All quotes are bundled locally in JSON; no internet required
 - **Flat design** — Two colors. That's it.
 
@@ -96,6 +96,7 @@ When placing a widget, a configuration screen appears with:
 - **Theme presets** — Select from dynamic dual-tone presets (Default pulls OS Monet colors, Ubuntu, Nothing OS, OLED Lime, Navy, Forest, Plum, Crimson)
 - **Typography options** — Pick a Font Face (Sans Serif, Serif, Monospace) and Font Size (Extra Small to Extra Large)
 - **Corner Shape** — Set the background shape (Pill, Rounded, Sharp, OS Default)
+- **Auto-Refresh Interval** — Set how often the quote updates (1 min to 24 hours)
 - Live preview of the widget updates instantly as you tweak settings
 
 ### Multiple Widgets

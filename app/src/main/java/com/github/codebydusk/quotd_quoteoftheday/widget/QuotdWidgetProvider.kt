@@ -182,35 +182,38 @@ class QuotdWidgetProvider : AppWidgetProvider() {
         }
 
         /**
-         * Schedules auto-refresh for the generic widget provider.
+         * Schedules auto-refresh for a specific widget.
          */
-        fun scheduleAutoRefresh(context: Context) {
+        fun scheduleAutoRefresh(context: Context, appWidgetId: Int) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val intent = Intent(context, receiverClass).apply {
                 action = ACTION_AUTO_REFRESH
+                putExtra(EXTRA_WIDGET_ID, appWidgetId)
             }
             val pending = PendingIntent.getBroadcast(
-                context, receiverClass.hashCode(), intent,
+                context, appWidgetId, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
+            val interval = WidgetPrefsManager.getRefreshInterval(context, appWidgetId)
             alarmManager.setRepeating(
                 AlarmManager.ELAPSED_REALTIME,
-                SystemClock.elapsedRealtime() + REFRESH_INTERVAL_MS,
-                REFRESH_INTERVAL_MS,
+                SystemClock.elapsedRealtime() + interval,
+                interval,
                 pending
             )
         }
 
         /**
-         * Cancels auto-refresh alarms.
+         * Cancels auto-refresh alarm for a specific widget.
          */
-        fun cancelAutoRefresh(context: Context) {
+        fun cancelAutoRefresh(context: Context, appWidgetId: Int) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val intent = Intent(context, receiverClass).apply {
                 action = ACTION_AUTO_REFRESH
+                putExtra(EXTRA_WIDGET_ID, appWidgetId)
             }
             val pending = PendingIntent.getBroadcast(
-                context, receiverClass.hashCode(), intent,
+                context, appWidgetId, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
             alarmManager.cancel(pending)
@@ -224,6 +227,7 @@ class QuotdWidgetProvider : AppWidgetProvider() {
     ) {
         for (appWidgetId in appWidgetIds) {
             updateWidget(context, appWidgetManager, appWidgetId)
+            scheduleAutoRefresh(context, appWidgetId)
         }
     }
 
@@ -242,12 +246,9 @@ class QuotdWidgetProvider : AppWidgetProvider() {
 
         when (intent.action) {
             ACTION_AUTO_REFRESH -> {
-                // Refresh all widgets belonging to this receiver class
-                val manager = AppWidgetManager.getInstance(context)
-                val allIds = manager.getAppWidgetIds(
-                    ComponentName(context, this::class.java)
-                )
-                for (id in allIds) {
+                val id = intent.getIntExtra(EXTRA_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
+                if (id != AppWidgetManager.INVALID_APPWIDGET_ID) {
+                    val manager = AppWidgetManager.getInstance(context)
                     updateWidget(context, manager, id)
                 }
                 return
@@ -334,21 +335,16 @@ class QuotdWidgetProvider : AppWidgetProvider() {
 
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
-        scheduleAutoRefresh(context)
     }
 
     override fun onDisabled(context: Context) {
         super.onDisabled(context)
-        // Only cancel if NO widgets of any type remain
-        val manager = AppWidgetManager.getInstance(context)
-        if (manager.getAppWidgetIds(ComponentName(context, receiverClass)).isEmpty()) {
-            cancelAutoRefresh(context)
-        }
     }
 
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {
         super.onDeleted(context, appWidgetIds)
         for (id in appWidgetIds) {
+            cancelAutoRefresh(context, id)
             WidgetPrefsManager.deletePrefs(context, id)
         }
     }

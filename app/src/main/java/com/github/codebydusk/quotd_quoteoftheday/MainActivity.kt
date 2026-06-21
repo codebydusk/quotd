@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
@@ -52,6 +53,12 @@ fun QuotdLandingScreen() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Image(
+                painter = androidx.compose.ui.res.painterResource(id = R.drawable.ic_launcher_foreground),
+                contentDescription = "App Logo",
+                modifier = Modifier.size(96.dp).padding(bottom = 16.dp)
+            )
+
             // App name
             Text(
                 text = "quotd",
@@ -77,7 +84,7 @@ fun QuotdLandingScreen() {
 
             // Tagline
             Text(
-                text = "Quotes. Horoscopes.\nBad advice. Emotional damage.",
+                text = "A widget full of reasons, wisdom,\nchaos, and emotional damage.",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = textSecondary,
@@ -88,7 +95,7 @@ fun QuotdLandingScreen() {
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "Daily wisdom, questionable wisdom,\nand everything in between.",
+                text = "No accounts. No internet. No tracking.\nJust words.",
                 fontSize = 13.sp,
                 color = textMuted,
                 textAlign = TextAlign.Center,
