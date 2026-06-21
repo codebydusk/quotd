@@ -17,15 +17,15 @@ object QuoteRepository {
      * Available categories mapped to their asset filenames.
      */
     val categories = mapOf(
-        "no" to "no.json",
-        "chaos" to "chaos.json",
-        "bad_advice" to "bad_advice.json",
-        "emotional_damage" to "emotional_damage.json",
-        "love" to "love.json",
-        "lust" to "lust.json",
-        "horoscope" to "horoscope.json",
-        "insults" to "insults.json",
-        "office_excuses" to "office_excuses.json"
+        "no" to "quotes/no.json",
+        "chaos" to "quotes/chaos.json",
+        "bad_advice" to "quotes/bad_advice.json",
+        "emotional_damage" to "quotes/emotional_damage.json",
+        "love" to "quotes/love.json",
+        "lust" to "quotes/lust.json",
+        "horoscope" to "quotes/horoscope.json",
+        "insults" to "quotes/insults.json",
+        "office_excuses" to "quotes/office_excuses.json"
     )
 
     /**
