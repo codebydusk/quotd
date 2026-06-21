@@ -16,11 +16,13 @@ object WidgetPrefsManager {
     private const val KEY_FG_COLOR = "fg_color_"
     private const val KEY_CURRENT_QUOTE = "current_quote_"
     private const val KEY_EMOJI_ENABLED = "emoji_enabled_"
+    private const val KEY_FONT_SIZE = "font_size_"
 
     // Defaults
     const val DEFAULT_BG_COLOR = 0xFF1A1A1A.toInt()
     const val DEFAULT_FG_COLOR = 0xFFF5F5F5.toInt()
     const val DEFAULT_CATEGORY = "no"
+    const val DEFAULT_FONT_SIZE = 16f
 
     private fun prefs(context: Context) =
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -70,6 +72,15 @@ object WidgetPrefsManager {
         prefs(context).edit().putBoolean(KEY_EMOJI_ENABLED + appWidgetId, enabled).apply()
     }
 
+    // ── Font Size ─────────────────────────────────────────────────────
+
+    fun getFontSize(context: Context, appWidgetId: Int): Float =
+        prefs(context).getFloat(KEY_FONT_SIZE + appWidgetId, DEFAULT_FONT_SIZE)
+
+    fun setFontSize(context: Context, appWidgetId: Int, size: Float) {
+        prefs(context).edit().putFloat(KEY_FONT_SIZE + appWidgetId, size).apply()
+    }
+
     // ── Cleanup ───────────────────────────────────────────────────────
 
     fun deletePrefs(context: Context, appWidgetId: Int) {
@@ -79,6 +90,7 @@ object WidgetPrefsManager {
             .remove(KEY_FG_COLOR + appWidgetId)
             .remove(KEY_CURRENT_QUOTE + appWidgetId)
             .remove(KEY_EMOJI_ENABLED + appWidgetId)
+            .remove(KEY_FONT_SIZE + appWidgetId)
             .apply()
     }
 
@@ -95,4 +107,9 @@ object WidgetPrefsManager {
         0xFFFDF0D5.toInt() to 0xFF003049.toInt(),  // Parchment / Ink
         0xFF780000.toInt() to 0xFFFDF0D5.toInt(),  // Crimson / Parchment
     )
+
+    // ── Font Size Presets ─────────────────────────────────────────────
+    
+    val fontSizes = listOf(12f, 14f, 16f, 20f, 24f)
+    val fontSizeLabels = listOf("Extra Small", "Small", "Normal", "Large", "Extra Large")
 }
