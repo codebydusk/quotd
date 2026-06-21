@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -29,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.codebydusk.quotd_quoteoftheday.R
 import com.github.codebydusk.quotd_quoteoftheday.data.QuoteRepository
 import com.github.codebydusk.quotd_quoteoftheday.data.WidgetPrefsManager
 
@@ -108,6 +110,32 @@ class QuotdWidgetConfigActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+fun SectionContainer(title: String, content: @Composable () -> Unit) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = Color.Transparent,
+        shape = RoundedCornerShape(16.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF333333))
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            if (title.isNotEmpty()) {
+                Text(
+                    text = title.uppercase(),
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF999999),
+                    letterSpacing = 1.5.sp
+                )
+            }
+            content()
+        }
+    }
+}
+
+@Composable
 fun WidgetConfigScreen(
     defaultCategory: String,
     defaultThemePresetId: String,
@@ -145,6 +173,7 @@ fun WidgetConfigScreen(
     val previewPreset = WidgetPrefsManager.themePresets[selectedPresetIndex]
     val bgColor = if (previewUseDark) previewPreset.darkBg else previewPreset.lightBg
     val fgColor = if (previewUseDark) previewPreset.darkFg else previewPreset.lightFg
+    val accentColor = if (previewUseDark) previewPreset.darkAccent else previewPreset.lightAccent
     
     val defaultFontSizeIndex = WidgetPrefsManager.fontSizes.indexOf(defaultFontSize).takeIf { it >= 0 } ?: 2
     var fontSizeIndex by remember { mutableFloatStateOf(defaultFontSizeIndex.toFloat()) }
@@ -167,7 +196,7 @@ fun WidgetConfigScreen(
     }
 
     val bgDark = Color(0xFF0D0D0D)
-    val surfaceColor = Color(0xFF1A1A1A)
+    val surfaceColor = Color.Transparent
     val textPrimary = Color(0xFFF5F5F5)
     val textSecondary = Color(0xFF999999)
 
@@ -185,62 +214,65 @@ fun WidgetConfigScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             // ── Header ──
-            Text(
-                text = "quotd",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.SansSerif,
-                color = textPrimary,
-                letterSpacing = (-1).sp
-            )
-            Text(
-                text = "Configure your widget",
-                fontSize = 14.sp,
-                color = textSecondary,
-                modifier = Modifier.offset(y = (-16).dp)
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = androidx.compose.ui.res.painterResource(id = R.drawable.ic_launcher_foreground),
+                    contentDescription = "App Logo",
+                    modifier = Modifier.size(64.dp).padding(end = 16.dp)
+                )
+                Column {
+                    Text(
+                        text = "quotd",
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily.SansSerif,
+                        color = textPrimary,
+                        letterSpacing = (-1).sp
+                    )
+                    Text(
+                        text = "Configure your widget",
+                        fontSize = 14.sp,
+                        color = textSecondary,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+            }
 
             // ── Category Selection ──
-            Text(
-                text = "CATEGORY",
-                fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = textSecondary,
-                letterSpacing = 1.5.sp
-            )
-
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                categories.forEach { (key, label) ->
-                    val isSelected = selectedCategory == key
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .clickable { selectedCategory = key },
-                        color = if (isSelected) Color(0xFF2A2A2A) else surfaceColor,
-                        shape = RoundedCornerShape(12.dp),
-                        border = if (isSelected) {
-                            androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF444444))
-                        } else null
-                    ) {
-                        Row(
+            SectionContainer(title = "CATEGORY") {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    categories.forEach { (key, label) ->
+                        val isSelected = selectedCategory == key
+                        Surface(
                             modifier = Modifier
-                                .padding(horizontal = 16.dp, vertical = 14.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable { selectedCategory = key },
+                            color = if (isSelected) Color(0xFF2A2A2A) else surfaceColor,
+                            shape = RoundedCornerShape(12.dp),
+                            border = if (isSelected) {
+                                androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF444444))
+                            } else null
                         ) {
-                            Text(
-                                text = label,
-                                fontSize = 15.sp,
-                                color = if (isSelected) textPrimary else textSecondary,
-                                fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            if (isSelected) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(8.dp)
-                                        .background(textPrimary, CircleShape)
+                            Row(
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = label,
+                                    fontSize = 15.sp,
+                                    color = if (isSelected) textPrimary else textSecondary,
+                                    fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
                                 )
+                                Spacer(modifier = Modifier.weight(1f))
+                                if (isSelected) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(8.dp)
+                                            .background(textPrimary, CircleShape)
+                                    )
+                                }
                             }
                         }
                     }
@@ -248,296 +280,273 @@ fun WidgetConfigScreen(
             }
 
             // ── Theme Mode ──
-            Text(
-                text = "THEME MODE",
-                fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = textSecondary,
-                letterSpacing = 1.5.sp
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                val modes = listOf(WidgetPrefsManager.ThemeMode.AUTO, WidgetPrefsManager.ThemeMode.LIGHT, WidgetPrefsManager.ThemeMode.DARK)
-                val modeLabels = listOf("Auto", "Light", "Dark")
-                modes.forEachIndexed { index, mode ->
-                    val isSelected = selectedThemeMode == mode
-                    Surface(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(12.dp))
-                            .clickable { selectedThemeMode = mode },
-                        color = if (isSelected) Color(0xFF2A2A2A) else surfaceColor,
-                        shape = RoundedCornerShape(12.dp),
-                        border = if (isSelected) {
-                            androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF444444))
-                        } else null
-                    ) {
-                        Text(
-                            text = modeLabels[index],
-                            fontSize = 13.sp,
-                            color = if (isSelected) textPrimary else textSecondary,
-                            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
-                            modifier = Modifier.padding(vertical = 12.dp),
-                            textAlign = TextAlign.Center
-                        )
+            SectionContainer(title = "THEME MODE") {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val modes = listOf(WidgetPrefsManager.ThemeMode.AUTO, WidgetPrefsManager.ThemeMode.LIGHT, WidgetPrefsManager.ThemeMode.DARK)
+                    val modeLabels = listOf("Auto", "Light", "Dark")
+                    modes.forEachIndexed { index, mode ->
+                        val isSelected = selectedThemeMode == mode
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable { selectedThemeMode = mode },
+                            color = if (isSelected) Color(0xFF2A2A2A) else surfaceColor,
+                            shape = RoundedCornerShape(12.dp),
+                            border = if (isSelected) {
+                                androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF444444))
+                            } else null
+                        ) {
+                            Text(
+                                text = modeLabels[index],
+                                fontSize = 13.sp,
+                                color = if (isSelected) textPrimary else textSecondary,
+                                fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
+                                modifier = Modifier.padding(vertical = 12.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
             }
 
             // ── Color Presets ──
-            Text(
-                text = "PRESET - ${WidgetPrefsManager.themePresets[selectedPresetIndex].name.uppercase()}",
-                fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = textSecondary,
-                letterSpacing = 1.5.sp
-            )
+            SectionContainer(title = "THEME: ${WidgetPrefsManager.themePresets[selectedPresetIndex].name}") {
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    WidgetPrefsManager.themePresets.chunked(4).forEach { rowPresets ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            rowPresets.forEach { preset ->
+                                val index = WidgetPrefsManager.themePresets.indexOf(preset)
+                                val isSelected = index == selectedPresetIndex
+                                val presetBg = if (previewUseDark) preset.darkBg else preset.lightBg
+                                val presetFg = if (previewUseDark) preset.darkFg else preset.lightFg
 
-            Row(
-                modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                WidgetPrefsManager.themePresets.forEachIndexed { index, preset ->
-                    val isSelected = index == selectedPresetIndex
-                    val presetBg = if (previewUseDark) preset.darkBg else preset.lightBg
-                    val presetFg = if (previewUseDark) preset.darkFg else preset.lightFg
-
-                    Box(
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(Color(presetBg))
-                            .then(
-                                if (isSelected) Modifier.border(2.dp, textPrimary, CircleShape)
-                                else Modifier.border(1.dp, Color(0xFF333333), CircleShape)
-                            )
-                            .clickable {
-                                selectedPresetIndex = index
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(14.dp)
-                                .background(Color(presetFg), CircleShape)
-                        )
+                                Box(
+                                    modifier = Modifier
+                                        .size(46.dp)
+                                        .clip(CircleShape)
+                                        .background(Color(presetBg))
+                                        .then(
+                                            if (isSelected) Modifier.border(3.dp, textPrimary, CircleShape)
+                                            else Modifier.border(1.dp, Color(0xFF333333), CircleShape)
+                                        )
+                                        .clickable {
+                                            selectedPresetIndex = index
+                                        },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(18.dp)
+                                            .background(Color(presetFg), CircleShape)
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
 
             // ── Emoji Toggle ──
-            Text(
-                text = "EMOJI",
-                fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = textSecondary,
-                letterSpacing = 1.5.sp
-            )
-
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp)),
-                color = surfaceColor,
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Row(
+            SectionContainer(title = "EMOJI") {
+                Surface(
                     modifier = Modifier
-                        .padding(horizontal = 16.dp, vertical = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp)),
+                    color = surfaceColor,
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = "Dynamic emoji",
-                            fontSize = 15.sp,
-                            color = textPrimary,
-                            fontWeight = FontWeight.Medium
-                        )
-                        Text(
-                            text = "Sprinkle contextual emojis into quotes",
-                            fontSize = 12.sp,
-                            color = textSecondary
+                    Row(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Dynamic emoji",
+                                fontSize = 15.sp,
+                                color = textPrimary,
+                                fontWeight = FontWeight.Medium
+                            )
+                            Text(
+                                text = "Sprinkle contextual emojis into quotes",
+                                fontSize = 12.sp,
+                                color = textSecondary
+                            )
+                        }
+                        Switch(
+                            checked = emojiEnabled,
+                            onCheckedChange = { emojiEnabled = it },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = Color(0xFF0D0D0D),
+                                checkedTrackColor = textPrimary,
+                                uncheckedThumbColor = textSecondary,
+                                uncheckedTrackColor = surfaceColor,
+                                uncheckedBorderColor = Color(0xFF333333)
+                            )
                         )
                     }
-                    Switch(
-                        checked = emojiEnabled,
-                        onCheckedChange = { emojiEnabled = it },
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = Color(0xFF0D0D0D),
-                            checkedTrackColor = textPrimary,
-                            uncheckedThumbColor = textSecondary,
-                            uncheckedTrackColor = surfaceColor,
-                            uncheckedBorderColor = Color(0xFF333333)
-                        )
-                    )
                 }
             }
 
             // ── Typography ──
-            Text(
-                text = "TYPOGRAPHY",
-                fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = textSecondary,
-                letterSpacing = 1.5.sp
-            )
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                WidgetPrefsManager.fontFamilyLabels.forEachIndexed { index, label ->
-                    val isSelected = fontFamilyIndex == index
-                    Surface(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(12.dp))
-                            .clickable { fontFamilyIndex = index },
-                        color = if (isSelected) Color(0xFF2A2A2A) else surfaceColor,
-                        shape = RoundedCornerShape(12.dp),
-                        border = if (isSelected) {
-                            androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF444444))
-                        } else null
+            SectionContainer(title = "TYPOGRAPHY") {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    WidgetPrefsManager.fontFamilyLabels.forEachIndexed { index, label ->
+                        val isSelected = fontFamilyIndex == index
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable { fontFamilyIndex = index },
+                            color = if (isSelected) Color(0xFF2A2A2A) else surfaceColor,
+                            shape = RoundedCornerShape(12.dp),
+                            border = if (isSelected) {
+                                androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF444444))
+                            } else null
+                        ) {
+                            Text(
+                                text = label,
+                                fontSize = 13.sp,
+                                color = if (isSelected) textPrimary else textSecondary,
+                                fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
+                                modifier = Modifier.padding(vertical = 12.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp)),
+                    color = surfaceColor,
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
                     ) {
+                        val steps = WidgetPrefsManager.fontSizes.size - 2
+                        Slider(
+                            value = fontSizeIndex,
+                            onValueChange = { fontSizeIndex = it },
+                            valueRange = 0f..(WidgetPrefsManager.fontSizes.size - 1).toFloat(),
+                            steps = steps,
+                            colors = SliderDefaults.colors(
+                                thumbColor = textPrimary,
+                                activeTrackColor = textPrimary,
+                                inactiveTrackColor = Color(0xFF333333)
+                            )
+                        )
                         Text(
-                            text = label,
-                            fontSize = 13.sp,
-                            color = if (isSelected) textPrimary else textSecondary,
-                            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
-                            modifier = Modifier.padding(vertical = 12.dp),
-                            textAlign = TextAlign.Center
+                            text = WidgetPrefsManager.fontSizeLabels[fontSizeIndex.toInt()],
+                            fontSize = 14.sp,
+                            color = textSecondary,
+                            modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 4.dp)
                         )
                     }
                 }
             }
 
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp)),
-                color = surfaceColor,
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
-                ) {
-                    val steps = WidgetPrefsManager.fontSizes.size - 2
-                    Slider(
-                        value = fontSizeIndex,
-                        onValueChange = { fontSizeIndex = it },
-                        valueRange = 0f..(WidgetPrefsManager.fontSizes.size - 1).toFloat(),
-                        steps = steps,
-                        colors = SliderDefaults.colors(
-                            thumbColor = textPrimary,
-                            activeTrackColor = textPrimary,
-                            inactiveTrackColor = Color(0xFF333333)
-                        )
-                    )
-                    Text(
-                        text = WidgetPrefsManager.fontSizeLabels[fontSizeIndex.toInt()],
-                        fontSize = 14.sp,
-                        color = textSecondary,
-                        modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 4.dp)
-                    )
-                }
-            }
-
             // ── Corner Shape ──
-            Text(
-                text = "CORNER SHAPE",
-                fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = textSecondary,
-                letterSpacing = 1.5.sp
-            )
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                val shapes = listOf(
-                    WidgetPrefsManager.CornerShape.PILL to "Pill",
-                    WidgetPrefsManager.CornerShape.ROUNDED to "Rounded",
-                    WidgetPrefsManager.CornerShape.SHARP to "Sharp",
-                    WidgetPrefsManager.CornerShape.DEFAULT to "OS Default"
-                )
-                shapes.forEach { (shape, label) ->
-                    val isSelected = selectedCornerShape == shape
-                    Surface(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(12.dp))
-                            .clickable { selectedCornerShape = shape },
-                        color = if (isSelected) Color(0xFF2A2A2A) else surfaceColor,
-                        shape = RoundedCornerShape(12.dp),
-                        border = if (isSelected) {
-                            androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF444444))
-                        } else null
-                    ) {
-                        Text(
-                            text = label,
-                            fontSize = 13.sp,
-                            color = if (isSelected) textPrimary else textSecondary,
-                            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
-                            modifier = Modifier.padding(vertical = 12.dp),
-                            textAlign = TextAlign.Center
-                        )
+            SectionContainer(title = "WIDGET CORNERS") {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val shapes = listOf(
+                        WidgetPrefsManager.CornerShape.PILL to "Pill",
+                        WidgetPrefsManager.CornerShape.ROUNDED to "Rounded",
+                        WidgetPrefsManager.CornerShape.SHARP to "Sharp",
+                        WidgetPrefsManager.CornerShape.DEFAULT to "OS Default"
+                    )
+                    shapes.forEach { (shape, label) ->
+                        val isSelected = selectedCornerShape == shape
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable { selectedCornerShape = shape },
+                            color = if (isSelected) Color(0xFF2A2A2A) else surfaceColor,
+                            shape = RoundedCornerShape(12.dp),
+                            border = if (isSelected) {
+                                androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF444444))
+                            } else null
+                        ) {
+                            Text(
+                                text = label,
+                                fontSize = 13.sp,
+                                color = if (isSelected) textPrimary else textSecondary,
+                                fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
+                                modifier = Modifier.padding(vertical = 12.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
             }
 
             // ── Live Preview ──
-            Text(
-                text = "PREVIEW",
-                fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = textSecondary,
-                letterSpacing = 1.5.sp
-            )
-
-            val previewShape = when (selectedCornerShape) {
-                WidgetPrefsManager.CornerShape.PILL -> RoundedCornerShape(100.dp)
-                WidgetPrefsManager.CornerShape.ROUNDED -> RoundedCornerShape(24.dp)
-                WidgetPrefsManager.CornerShape.SHARP -> RoundedCornerShape(0.dp)
-                WidgetPrefsManager.CornerShape.DEFAULT -> RoundedCornerShape(16.dp)
-            }
-
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp),
-                color = Color(bgColor),
-                shape = previewShape
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 14.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "The stars have spoken. They'd like to remain anonymous.",
-                        color = Color(fgColor),
-                        fontSize = WidgetPrefsManager.fontSizes[fontSizeIndex.toInt()].sp,
-                        fontFamily = when (WidgetPrefsManager.fontFamilies[fontFamilyIndex]) {
-                            "serif" -> FontFamily.Serif
-                            "monospace" -> FontFamily.Monospace
-                            else -> FontFamily.SansSerif
-                        },
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.weight(1f),
-                        maxLines = 2
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "⟳",
-                        color = Color(fgColor),
-                        fontSize = 20.sp
-                    )
+            SectionContainer(title = "PREVIEW") {
+                val previewShape = when (selectedCornerShape) {
+                    WidgetPrefsManager.CornerShape.PILL -> RoundedCornerShape(100.dp)
+                    WidgetPrefsManager.CornerShape.ROUNDED -> RoundedCornerShape(24.dp)
+                    WidgetPrefsManager.CornerShape.SHARP -> RoundedCornerShape(0.dp)
+                    WidgetPrefsManager.CornerShape.DEFAULT -> RoundedCornerShape(16.dp)
                 }
+
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(64.dp),
+                    color = Color(bgColor),
+                    shape = previewShape
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 14.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "The stars have spoken. They'd like to remain anonymous.",
+                            color = Color(fgColor),
+                            fontSize = WidgetPrefsManager.fontSizes[fontSizeIndex.toInt()].sp,
+                            fontFamily = when (WidgetPrefsManager.fontFamilies[fontFamilyIndex]) {
+                                "serif" -> FontFamily.Serif
+                                "monospace" -> FontFamily.Monospace
+                                else -> FontFamily.SansSerif
+                            },
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.weight(1f),
+                            maxLines = 2
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "⟳",
+                            color = Color(accentColor),
+                            fontSize = 20.sp
+                        )
+                    }
+                }
+
+                Text(
+                    text = "* Sharp corners might be overridden by your launcher's default widget styling on Android 12+",
+                    fontSize = 11.sp,
+                    color = textSecondary,
+                    lineHeight = 16.sp,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
             }
 
             Spacer(modifier = Modifier.weight(1f))

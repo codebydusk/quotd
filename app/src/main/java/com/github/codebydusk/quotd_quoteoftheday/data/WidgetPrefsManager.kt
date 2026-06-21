@@ -19,8 +19,10 @@ object WidgetPrefsManager {
         val name: String,
         val lightBg: Int,
         val lightFg: Int,
+        val lightAccent: Int,
         val darkBg: Int,
-        val darkFg: Int
+        val darkFg: Int,
+        val darkAccent: Int
     )
 
     private const val KEY_CATEGORY = "category_"
@@ -70,7 +72,7 @@ object WidgetPrefsManager {
         prefs(context).edit().putString(KEY_THEME_MODE + appWidgetId, mode.name).apply()
     }
 
-    fun resolveColors(context: Context, presetId: String, mode: ThemeMode): Pair<Int, Int> {
+    fun resolveColors(context: Context, presetId: String, mode: ThemeMode): Triple<Int, Int, Int> {
         val preset = themePresets.find { it.id == presetId } ?: themePresets.first()
         val isSystemDark = (context.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
         val useDark = when (mode) {
@@ -81,13 +83,18 @@ object WidgetPrefsManager {
         if (preset.id == "default" && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
             val bgRes = if (useDark) android.R.color.system_neutral1_900 else android.R.color.system_neutral1_50
             val fgRes = if (useDark) android.R.color.system_neutral1_50 else android.R.color.system_neutral1_900
-            return androidx.core.content.ContextCompat.getColor(context, bgRes) to androidx.core.content.ContextCompat.getColor(context, fgRes)
+            val accentRes = if (useDark) android.R.color.system_accent1_300 else android.R.color.system_accent1_600
+            return Triple(
+                androidx.core.content.ContextCompat.getColor(context, bgRes),
+                androidx.core.content.ContextCompat.getColor(context, fgRes),
+                androidx.core.content.ContextCompat.getColor(context, accentRes)
+            )
         }
 
         return if (useDark) {
-            preset.darkBg to preset.darkFg
+            Triple(preset.darkBg, preset.darkFg, preset.darkAccent)
         } else {
-            preset.lightBg to preset.lightFg
+            Triple(preset.lightBg, preset.lightFg, preset.lightAccent)
         }
     }
 
@@ -156,14 +163,14 @@ object WidgetPrefsManager {
     // ── Theme Presets ─────────────────────────────────────────────────
 
     val themePresets: List<ThemePreset> = listOf(
-        ThemePreset("default", "Default", 0xFFF5F5F5.toInt(), 0xFF1A1A1A.toInt(), 0xFF1A1A1A.toInt(), 0xFFF5F5F5.toInt()),
-        ThemePreset("ubuntu", "Ubuntu", 0xFFFFFFFF.toInt(), 0xFFE95420.toInt(), 0xFF300A24.toInt(), 0xFFE95420.toInt()),
-        ThemePreset("nothing_os", "Nothing OS", 0xFFFDFBFF.toInt(), 0xFFD71921.toInt(), 0xFF1B1B1D.toInt(), 0xFFD71921.toInt()),
-        ThemePreset("oled_lime", "OLED Lime", 0xFF000000.toInt(), 0xFFCAFE48.toInt(), 0xFF000000.toInt(), 0xFFCAFE48.toInt()),
-        ThemePreset("navy", "Navy", 0xFFE0E1DD.toInt(), 0xFF0D1B2A.toInt(), 0xFF0D1B2A.toInt(), 0xFFE0E1DD.toInt()),
-        ThemePreset("forest", "Forest", 0xFFD8F3DC.toInt(), 0xFF1B4332.toInt(), 0xFF1B4332.toInt(), 0xFFD8F3DC.toInt()),
-        ThemePreset("plum", "Plum", 0xFFF8E9A1.toInt(), 0xFF3C1642.toInt(), 0xFF3C1642.toInt(), 0xFFF8E9A1.toInt()),
-        ThemePreset("crimson", "Crimson", 0xFFFDF0D5.toInt(), 0xFF780000.toInt(), 0xFF780000.toInt(), 0xFFFDF0D5.toInt())
+        ThemePreset("default", "Default", 0xFFF5F5F5.toInt(), 0xFF1A1A1A.toInt(), 0xFF0055FF.toInt(), 0xFF1A1A1A.toInt(), 0xFFF5F5F5.toInt(), 0xFF4488FF.toInt()),
+        ThemePreset("ubuntu", "Ubuntu", 0xFFFFFFFF.toInt(), 0xFFE95420.toInt(), 0xFF300A24.toInt(), 0xFF300A24.toInt(), 0xFFFFFFFF.toInt(), 0xFFE95420.toInt()),
+        ThemePreset("nothing_os", "Nothing OS", 0xFFFDFBFF.toInt(), 0xFF1B1B1D.toInt(), 0xFFD71921.toInt(), 0xFF1B1B1D.toInt(), 0xFFFDFBFF.toInt(), 0xFFD71921.toInt()),
+        ThemePreset("oled_lime", "Matrix", 0xFF000000.toInt(), 0xFFCAFE48.toInt(), 0xFFFFFFFF.toInt(), 0xFF000000.toInt(), 0xFFCAFE48.toInt(), 0xFFFFFFFF.toInt()),
+        ThemePreset("navy", "Navy", 0xFFE0E1DD.toInt(), 0xFF0D1B2A.toInt(), 0xFFE63946.toInt(), 0xFF0D1B2A.toInt(), 0xFFE0E1DD.toInt(), 0xFFE63946.toInt()),
+        ThemePreset("forest", "Forest", 0xFFD8F3DC.toInt(), 0xFF1B4332.toInt(), 0xFFF4A261.toInt(), 0xFF1B4332.toInt(), 0xFFD8F3DC.toInt(), 0xFF52B788.toInt()),
+        ThemePreset("plum", "Plum", 0xFFF8E9A1.toInt(), 0xFF3C1642.toInt(), 0xFF087E8B.toInt(), 0xFF3C1642.toInt(), 0xFFF8E9A1.toInt(), 0xFFFF5A5F.toInt()),
+        ThemePreset("crimson", "Crimson", 0xFFFDF0D5.toInt(), 0xFF780000.toInt(), 0xFFD4AF37.toInt(), 0xFF780000.toInt(), 0xFFFDF0D5.toInt(), 0xFFD4AF37.toInt())
     )
 
     // ── Typography Presets ────────────────────────────────────────────
