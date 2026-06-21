@@ -69,6 +69,7 @@ class QuotdWidgetConfigActivity : ComponentActivity() {
         val defaultEmojiEnabled = WidgetPrefsManager.isEmojiEnabled(this, appWidgetId)
         val defaultFontSize = WidgetPrefsManager.getFontSize(this, appWidgetId)
         val defaultFontFamily = WidgetPrefsManager.getFontFamily(this, appWidgetId)
+        val defaultCornerShape = WidgetPrefsManager.getCornerShape(this, appWidgetId)
 
         enableEdgeToEdge()
 
@@ -80,20 +81,22 @@ class QuotdWidgetConfigActivity : ComponentActivity() {
                 defaultEmojiEnabled = defaultEmojiEnabled,
                 defaultFontSize = defaultFontSize,
                 defaultFontFamily = defaultFontFamily,
-                onStateChanged = { category, themePresetId, themeMode, emojiEnabled, fontSize, fontFamily ->
-                    applyConfiguration(category, themePresetId, themeMode, emojiEnabled, fontSize, fontFamily)
+                defaultCornerShape = defaultCornerShape,
+                onStateChanged = { category, themePresetId, themeMode, emojiEnabled, fontSize, fontFamily, cornerShape ->
+                    applyConfiguration(category, themePresetId, themeMode, emojiEnabled, fontSize, fontFamily, cornerShape)
                 }
             )
         }
     }
 
-    private fun applyConfiguration(category: String, themePresetId: String, themeMode: WidgetPrefsManager.ThemeMode, emojiEnabled: Boolean, fontSize: Float, fontFamily: String) {
+    private fun applyConfiguration(category: String, themePresetId: String, themeMode: WidgetPrefsManager.ThemeMode, emojiEnabled: Boolean, fontSize: Float, fontFamily: String, cornerShape: WidgetPrefsManager.CornerShape) {
         WidgetPrefsManager.setCategory(this, appWidgetId, category)
         WidgetPrefsManager.setThemePresetId(this, appWidgetId, themePresetId)
         WidgetPrefsManager.setThemeMode(this, appWidgetId, themeMode)
         WidgetPrefsManager.setEmojiEnabled(this, appWidgetId, emojiEnabled)
         WidgetPrefsManager.setFontSize(this, appWidgetId, fontSize)
         WidgetPrefsManager.setFontFamily(this, appWidgetId, fontFamily)
+        WidgetPrefsManager.setCornerShape(this, appWidgetId, cornerShape)
 
         // Trigger initial widget update
         val appWidgetManager = AppWidgetManager.getInstance(this)
@@ -112,7 +115,8 @@ fun WidgetConfigScreen(
     defaultEmojiEnabled: Boolean,
     defaultFontSize: Float,
     defaultFontFamily: String,
-    onStateChanged: (category: String, themePresetId: String, themeMode: WidgetPrefsManager.ThemeMode, emojiEnabled: Boolean, fontSize: Float, fontFamily: String) -> Unit
+    defaultCornerShape: WidgetPrefsManager.CornerShape,
+    onStateChanged: (category: String, themePresetId: String, themeMode: WidgetPrefsManager.ThemeMode, emojiEnabled: Boolean, fontSize: Float, fontFamily: String, cornerShape: WidgetPrefsManager.CornerShape) -> Unit
 ) {
     val categories = listOf(
         "no" to "🚫 No",
@@ -148,14 +152,17 @@ fun WidgetConfigScreen(
     val defaultFontFamilyIndex = WidgetPrefsManager.fontFamilies.indexOf(defaultFontFamily).takeIf { it >= 0 } ?: 0
     var fontFamilyIndex by remember { mutableIntStateOf(defaultFontFamilyIndex) }
 
-    LaunchedEffect(selectedCategory, selectedPresetIndex, selectedThemeMode, emojiEnabled, fontSizeIndex, fontFamilyIndex) {
+    var selectedCornerShape by remember { mutableStateOf(defaultCornerShape) }
+
+    LaunchedEffect(selectedCategory, selectedPresetIndex, selectedThemeMode, emojiEnabled, fontSizeIndex, fontFamilyIndex, selectedCornerShape) {
         onStateChanged(
             selectedCategory,
             WidgetPrefsManager.themePresets[selectedPresetIndex].id,
             selectedThemeMode,
             emojiEnabled,
             WidgetPrefsManager.fontSizes[fontSizeIndex.toInt()],
-            WidgetPrefsManager.fontFamilies[fontFamilyIndex]
+            WidgetPrefsManager.fontFamilies[fontFamilyIndex],
+            selectedCornerShape
         )
     }
 
@@ -438,6 +445,50 @@ fun WidgetConfigScreen(
                 }
             }
 
+            // ── Corner Shape ──
+            Text(
+                text = "CORNER SHAPE",
+                fontSize = 11.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = textSecondary,
+                letterSpacing = 1.5.sp
+            )
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                val shapes = listOf(
+                    WidgetPrefsManager.CornerShape.PILL to "Pill",
+                    WidgetPrefsManager.CornerShape.ROUNDED to "Rounded",
+                    WidgetPrefsManager.CornerShape.SHARP to "Sharp",
+                    WidgetPrefsManager.CornerShape.DEFAULT to "OS Default"
+                )
+                shapes.forEach { (shape, label) ->
+                    val isSelected = selectedCornerShape == shape
+                    Surface(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(12.dp))
+                            .clickable { selectedCornerShape = shape },
+                        color = if (isSelected) Color(0xFF2A2A2A) else surfaceColor,
+                        shape = RoundedCornerShape(12.dp),
+                        border = if (isSelected) {
+                            androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF444444))
+                        } else null
+                    ) {
+                        Text(
+                            text = label,
+                            fontSize = 13.sp,
+                            color = if (isSelected) textPrimary else textSecondary,
+                            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
+                            modifier = Modifier.padding(vertical = 12.dp),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+
             // ── Live Preview ──
             Text(
                 text = "PREVIEW",
@@ -447,12 +498,19 @@ fun WidgetConfigScreen(
                 letterSpacing = 1.5.sp
             )
 
+            val previewShape = when (selectedCornerShape) {
+                WidgetPrefsManager.CornerShape.PILL -> RoundedCornerShape(100.dp)
+                WidgetPrefsManager.CornerShape.ROUNDED -> RoundedCornerShape(24.dp)
+                WidgetPrefsManager.CornerShape.SHARP -> RoundedCornerShape(0.dp)
+                WidgetPrefsManager.CornerShape.DEFAULT -> RoundedCornerShape(16.dp)
+            }
+
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(64.dp),
                 color = Color(bgColor),
-                shape = RoundedCornerShape(16.dp)
+                shape = previewShape
             ) {
                 Row(
                     modifier = Modifier

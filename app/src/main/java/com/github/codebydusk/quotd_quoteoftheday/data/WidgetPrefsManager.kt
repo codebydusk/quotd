@@ -12,6 +12,7 @@ object WidgetPrefsManager {
 
     private const val PREFS_NAME = "quotd_widget_prefs"
     enum class ThemeMode { AUTO, LIGHT, DARK }
+    enum class CornerShape { PILL, ROUNDED, SHARP, DEFAULT }
 
     data class ThemePreset(
         val id: String,
@@ -29,6 +30,7 @@ object WidgetPrefsManager {
     private const val KEY_EMOJI_ENABLED = "emoji_enabled_"
     private const val KEY_FONT_SIZE = "font_size_"
     private const val KEY_FONT_FAMILY = "font_family_"
+    private const val KEY_CORNER_SHAPE = "corner_shape_"
 
     // Defaults
     const val DEFAULT_CATEGORY = "no"
@@ -36,6 +38,7 @@ object WidgetPrefsManager {
     val DEFAULT_THEME_MODE = ThemeMode.AUTO.name
     const val DEFAULT_FONT_SIZE = 16f
     const val DEFAULT_FONT_FAMILY = "sans-serif"
+    val DEFAULT_CORNER_SHAPE = CornerShape.DEFAULT.name
 
     private fun prefs(context: Context) =
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -124,6 +127,17 @@ object WidgetPrefsManager {
         prefs(context).edit().putString(KEY_FONT_FAMILY + appWidgetId, family).apply()
     }
 
+    // ── Corner Shape ──────────────────────────────────────────────────
+
+    fun getCornerShape(context: Context, appWidgetId: Int): CornerShape {
+        val shapeStr = prefs(context).getString(KEY_CORNER_SHAPE + appWidgetId, DEFAULT_CORNER_SHAPE) ?: DEFAULT_CORNER_SHAPE
+        return try { CornerShape.valueOf(shapeStr) } catch (e: Exception) { CornerShape.DEFAULT }
+    }
+
+    fun setCornerShape(context: Context, appWidgetId: Int, shape: CornerShape) {
+        prefs(context).edit().putString(KEY_CORNER_SHAPE + appWidgetId, shape.name).apply()
+    }
+
     // ── Cleanup ───────────────────────────────────────────────────────
 
     fun deletePrefs(context: Context, appWidgetId: Int) {
@@ -135,6 +149,7 @@ object WidgetPrefsManager {
             .remove(KEY_EMOJI_ENABLED + appWidgetId)
             .remove(KEY_FONT_SIZE + appWidgetId)
             .remove(KEY_FONT_FAMILY + appWidgetId)
+            .remove(KEY_CORNER_SHAPE + appWidgetId)
             .apply()
     }
 

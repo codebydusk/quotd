@@ -23,8 +23,10 @@ No accounts. No internet. No tracking. Just words.
 
 - **8 quote categories** — No, Chaos, Bad Advice, Emotional Damage, Love, Horoscope, Funny Insults, Office Excuses
 - **Resizable layouts** — Starts at 4×1 and expands to 4×2
-- **Typography customisation** — Adjust Font Size and Font Face for each widget
-- **Dynamic Themes** — Set themes to Auto, Light, or Dark, with curated presets including Ubuntu, Nothing OS, and OLED
+- **Typography customization** — Adjust Font Size (Extra Small to Extra Large) and Font Face (Sans Serif, Serif, Monospace)
+- **Dynamic Themes** — Set themes to Auto (follows system), Light, or Dark, with curated presets (Default OS Monet, Ubuntu, Nothing OS, OLED Lime, Navy, Forest, Plum, Crimson)
+- **Corner Shapes** — Customize the widget's corner radius (Pill, Rounded, Sharp, or OS Default)
+- **Instant Configuration** — No "Apply" button needed; tweak settings and see them update on the widget instantly
 - **Dynamic emoji augmentation** — Optional keyword-based emoji injection at runtime (toggle per widget)
 - **Tap to copy** — Tap the quote to copy it to your clipboard; widget shows a random copy-success message for 2 seconds
 - **Refresh button** — Manual refresh on the right side of the widget
@@ -83,17 +85,18 @@ The same quote looks slightly different every time. Can be toggled off per widge
 2. Select **Widgets**
 3. Find **quotd** in the widget list
 4. Add the 4×1 widget, then resize it from your launcher if you want more space
-5. Configure category and colors in the setup screen
-6. Tap **Apply**
+5. Configure category, colors, typography, and corner shapes in the setup screen
+6. Adjust settings to taste—changes apply instantly. Just exit the screen when done!
 
 ### Configuring Widgets
 
 When placing a widget, a configuration screen appears with:
 - **Category selector** — Pick any of the 8 quote modes
 - **Theme Mode** — Choose between Auto (follows system dark mode), Light, or Dark
-- **Theme presets** — Select from 8 dynamic dual-tone presets including Ubuntu, Nothing OS, and OLED
-- **Typography options** — Pick a Font Size and Font Face (Sans Serif, Serif, Monospace)
-- Live preview of the widget with your chosen theme
+- **Theme presets** — Select from dynamic dual-tone presets (Default pulls OS Monet colors, Ubuntu, Nothing OS, OLED Lime, Navy, Forest, Plum, Crimson)
+- **Typography options** — Pick a Font Face (Sans Serif, Serif, Monospace) and Font Size (Extra Small to Extra Large)
+- **Corner Shape** — Set the background shape (Pill, Rounded, Sharp, OS Default)
+- Live preview of the widget updates instantly as you tweak settings
 
 ### Multiple Widgets
 

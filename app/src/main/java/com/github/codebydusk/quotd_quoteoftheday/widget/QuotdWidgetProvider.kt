@@ -79,6 +79,7 @@ class QuotdWidgetProvider : AppWidgetProvider() {
             val (bgColor, fgColor) = WidgetPrefsManager.resolveColors(context, presetId, themeMode)
             val fontSize = WidgetPrefsManager.getFontSize(context, appWidgetId)
             val fontFamily = WidgetPrefsManager.getFontFamily(context, appWidgetId)
+            val cornerShape = WidgetPrefsManager.getCornerShape(context, appWidgetId)
             val quote = QuoteRepository.getRandomQuote(context, category)
 
             // Apply emoji decoration if enabled for this widget
@@ -92,7 +93,7 @@ class QuotdWidgetProvider : AppWidgetProvider() {
             WidgetPrefsManager.setCurrentQuote(context, appWidgetId, displayText)
 
             val layoutId = getLayoutForWidget(context, appWidgetId)
-            val views = buildRemoteViews(context, appWidgetId, layoutId, displayText, bgColor, fgColor, fontSize, fontFamily)
+            val views = buildRemoteViews(context, appWidgetId, layoutId, displayText, bgColor, fgColor, fontSize, fontFamily, cornerShape)
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
 
@@ -108,9 +109,10 @@ class QuotdWidgetProvider : AppWidgetProvider() {
             val (bgColor, fgColor) = WidgetPrefsManager.resolveColors(context, presetId, themeMode)
             val fontSize = WidgetPrefsManager.getFontSize(context, appWidgetId)
             val fontFamily = WidgetPrefsManager.getFontFamily(context, appWidgetId)
+            val cornerShape = WidgetPrefsManager.getCornerShape(context, appWidgetId)
             
             val layoutId = getLayoutForWidget(context, appWidgetId)
-            val views = buildRemoteViews(context, appWidgetId, layoutId, displayText, bgColor, fgColor, fontSize, fontFamily)
+            val views = buildRemoteViews(context, appWidgetId, layoutId, displayText, bgColor, fgColor, fontSize, fontFamily, cornerShape)
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
 
@@ -125,7 +127,8 @@ class QuotdWidgetProvider : AppWidgetProvider() {
             bgColor: Int,
             fgColor: Int,
             fontSize: Float,
-            fontFamily: String
+            fontFamily: String,
+            cornerShape: WidgetPrefsManager.CornerShape
         ): RemoteViews {
             val receiverClass = getReceiverClass(context, appWidgetId)
             val views = RemoteViews(context.packageName, layoutId)
@@ -136,7 +139,16 @@ class QuotdWidgetProvider : AppWidgetProvider() {
             views.setTextViewText(R.id.widget_text, spannableString)
             views.setTextColor(R.id.widget_text, fgColor)
             views.setTextViewTextSize(R.id.widget_text, android.util.TypedValue.COMPLEX_UNIT_SP, fontSize)
-            views.setInt(R.id.widget_root, "setBackgroundColor", bgColor)
+
+            val shapeRes = when (cornerShape) {
+                WidgetPrefsManager.CornerShape.PILL -> R.drawable.widget_shape_pill
+                WidgetPrefsManager.CornerShape.ROUNDED -> R.drawable.widget_shape_rounded
+                WidgetPrefsManager.CornerShape.SHARP -> R.drawable.widget_shape_sharp
+                WidgetPrefsManager.CornerShape.DEFAULT -> R.drawable.widget_shape_default
+            }
+            views.setImageViewResource(R.id.widget_background_image, shapeRes)
+            views.setInt(R.id.widget_background_image, "setColorFilter", bgColor)
+            
             views.setInt(R.id.widget_refresh, "setColorFilter", fgColor)
 
             // Copy click
@@ -265,9 +277,10 @@ class QuotdWidgetProvider : AppWidgetProvider() {
                 val (bgColor, fgColor) = WidgetPrefsManager.resolveColors(context, presetId, themeMode)
                 val fontSize = WidgetPrefsManager.getFontSize(context, appWidgetId)
                 val fontFamily = WidgetPrefsManager.getFontFamily(context, appWidgetId)
+                val cornerShape = WidgetPrefsManager.getCornerShape(context, appWidgetId)
                 val layoutId = getLayoutForWidget(context, appWidgetId)
                 val copyMessage = CopyMessageRepository.getRandomMessage(context)
-                val views = buildRemoteViews(context, appWidgetId, layoutId, copyMessage, bgColor, fgColor, fontSize, fontFamily)
+                val views = buildRemoteViews(context, appWidgetId, layoutId, copyMessage, bgColor, fgColor, fontSize, fontFamily, cornerShape)
                 val receiverClass = getReceiverClass(context, appWidgetId)
 
                 appWidgetManager.updateAppWidget(appWidgetId, views)
@@ -308,9 +321,10 @@ class QuotdWidgetProvider : AppWidgetProvider() {
                 val (bgColor, fgColor) = WidgetPrefsManager.resolveColors(context, presetId, themeMode)
                 val fontSize = WidgetPrefsManager.getFontSize(context, appWidgetId)
                 val fontFamily = WidgetPrefsManager.getFontFamily(context, appWidgetId)
+                val cornerShape = WidgetPrefsManager.getCornerShape(context, appWidgetId)
                 val layoutId = getLayoutForWidget(context, appWidgetId)
 
-                val views = buildRemoteViews(context, appWidgetId, layoutId, quote, bgColor, fgColor, fontSize, fontFamily)
+                val views = buildRemoteViews(context, appWidgetId, layoutId, quote, bgColor, fgColor, fontSize, fontFamily, cornerShape)
 
                 appWidgetManager.updateAppWidget(appWidgetId, views)
             }
